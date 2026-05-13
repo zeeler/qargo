@@ -18,11 +18,11 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
-    const isValid = this.smsService.verifyCode(dto.phone, dto.code);
-    if (!isValid) throw new BadRequestException('验证码错误或已过期');
-
     const existing = await this.prisma.user.findUnique({ where: { phone: dto.phone } });
     if (existing) throw new BadRequestException('该手机号已注册');
+
+    const isValid = this.smsService.verifyCode(dto.phone, dto.code);
+    if (!isValid) throw new BadRequestException('验证码错误或已过期');
 
     const user = await this.prisma.user.create({
       data: {
@@ -37,11 +37,11 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const isValid = this.smsService.verifyCode(dto.phone, dto.code);
-    if (!isValid) throw new BadRequestException('验证码错误或已过期');
-
     const user = await this.prisma.user.findUnique({ where: { phone: dto.phone } });
     if (!user) throw new UnauthorizedException('用户未注册');
+
+    const isValid = this.smsService.verifyCode(dto.phone, dto.code);
+    if (!isValid) throw new BadRequestException('验证码错误或已过期');
 
     return this.generateTokens(user.id, user.phone, user.role);
   }
