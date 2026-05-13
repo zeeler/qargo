@@ -51,9 +51,6 @@ async function handleSendCode() {
 async function handleLogin() {
   if (!phone.value || !code.value) { alert('请填写完整信息'); return; }
   try {
-    if (countdown.value <= 0) {
-      await authStore.sendCode(phone.value);
-    }
     await authStore.login({ phone: phone.value, code: code.value });
     router.push('/');
   } catch (e: any) {

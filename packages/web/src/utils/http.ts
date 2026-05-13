@@ -10,15 +10,19 @@ async function request(url: string, options: RequestInit = {}): Promise<any> {
 
   const res = await fetch(BASE_URL + url, { ...options, headers });
 
+  const data = await res.json().catch(() => null);
+
   if (res.status === 401) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/auth/login';
-    throw new Error('Unauthorized');
+    const message = data?.message || '登录已过期，请重新登录';
+    if (window.location.pathname !== '/auth/login') {
+      window.location.href = '/auth/login';
+    }
+    throw new Error(message);
   }
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+  if (!res.ok) throw new Error(data?.message || `HTTP ${res.status}`);
   return data;
 }
 
