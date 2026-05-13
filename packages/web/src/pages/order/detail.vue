@@ -1,0 +1,384 @@
+<template>
+  <div class="page">
+    <!-- Header -->
+    <header class="page-header">
+      <span class="back-btn" @click="router.back()">←</span>
+      <h2>订单详情</h2>
+      <span></span>
+    </header>
+
+    <!-- Status Bar -->
+    <div class="status-bar" :class="o?.status">
+      <h2>{{ statusMap[o?.status] || '订单详情' }}</h2>
+      <p class="order-no">订单号：{{ o?.orderNo }}</p>
+    </div>
+
+    <!-- Status Progress -->
+    <div class="progress-section" v-if="o && !['cancelled', 'disputed'].includes(o.status)">
+      <div class="progress-track">
+        <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
+      </div>
+      <div class="progress-steps">
+        <div v-for="step in progressSteps" :key="step.key" class="progress-step" :class="{ done: step.done, current: step.current }">
+          <span class="step-dot"></span>
+          <span class="step-label">{{ step.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address Info -->
+    <div class="section">
+      <div class="addr-block">
+        <div class="addr-row">
+          <span class="dot pickup"></span>
+          <div class="addr-content">
+            <span class="addr-tag">取</span>
+            <div>
+              <span class="addr-text">{{ o?.pickupAddress }}</span>
+              <span class="addr-contact" v-if="o">联系人：{{ o.pickupContactName }} {{ o.pickupContactPhone }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="addr-divider-line"></div>
+        <div class="addr-row">
+          <span class="dot dropoff"></span>
+          <div class="addr-content">
+            <span class="addr-tag send">送</span>
+            <div>
+              <span class="addr-text">{{ o?.dropoffAddress }}</span>
+              <span class="addr-contact" v-if="o">联系人：{{ o.dropoffContactName }} {{ o.dropoffContactPhone }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Driver Info -->
+    <div class="section" v-if="o?.driver">
+      <div class="sec-title">🚛 司机信息</div>
+      <div class="driver-card">
+        <div class="driver-avatar">{{ o.driver.user?.name?.[0] || '司' }}</div>
+        <div class="driver-info">
+          <span class="driver-name">{{ o.driver.user?.name || '未命名' }}</span>
+          <span class="driver-plate">{{ o.driver.vehicle?.plateNumber || '' }}</span>
+          <span class="driver-vehicle-type" v-if="o.driver.vehicle?.vehicleTypeName">{{ o.driver.vehicle.vehicleTypeName }}</span>
+        </div>
+        <a class="driver-call" v-if="o.driver.user?.phone" :href="'tel:' + o.driver.user.phone">📞</a>
+      </div>
+    </div>
+
+    <!-- Price Breakdown -->
+    <div class="section">
+      <div class="sec-title">📊 费用明细</div>
+      <div class="price-row">
+        <span>起步价（含{{ o?.includedKm || 5 }}km）</span>
+        <span>¥{{ o?.basePrice || 0 }}</span>
+      </div>
+      <div class="price-row" v-if="o?.distancePrice > 0">
+        <span>里程费 {{ o?.distanceKm }}km</span>
+        <span>¥{{ o?.distancePrice }}</span>
+      </div>
+      <div class="price-row" v-if="o?.surgeFee > 0">
+        <span>高峰期加价</span>
+        <span>¥{{ o?.surgeFee }}</span>
+      </div>
+      <div class="price-row" v-if="o?.userAdditionalFee > 0">
+        <span>用户加价</span>
+        <span class="tip-highlight">+¥{{ o?.userAdditionalFee }}</span>
+      </div>
+      <div class="price-row total">
+        <span>合计</span>
+        <span class="total-num">¥{{ o?.totalPrice }}</span>
+      </div>
+    </div>
+
+    <!-- Remark -->
+    <div class="section" v-if="o?.remark">
+      <div class="sec-title">📝 备注</div>
+      <p class="remark-text">{{ o.remark }}</p>
+    </div>
+
+    <!-- Payment Method -->
+    <div class="section" v-if="o?.paymentMethod">
+      <div class="sec-title">💳 支付方式</div>
+      <span>{{ o.paymentMethod === 'wechat' ? '微信支付' : '支付宝' }}</span>
+    </div>
+
+    <!-- Photos -->
+    <div class="section" v-if="o?.cargoPhotos?.length">
+      <div class="sec-title">📸 货物照片（{{ o.cargoPhotos.length }}张）</div>
+      <div class="photo-grid">
+        <div v-for="(photo, i) in o.cargoPhotos" :key="i" class="photo-item">
+          <span>📷 照片 {{ i + 1 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timestamps -->
+    <div class="section" v-if="o">
+      <div class="sec-title">⏱️ 时间记录</div>
+      <div class="time-row"><span>创建</span><span>{{ formatTime(o.createdAt) }}</span></div>
+      <div class="time-row" v-if="o.paidAt"><span>支付</span><span>{{ formatTime(o.paidAt) }}</span></div>
+      <div class="time-row" v-if="o.dispatchedAt"><span>接单</span><span>{{ formatTime(o.dispatchedAt) }}</span></div>
+      <div class="time-row" v-if="o.arrivedAt"><span>到达</span><span>{{ formatTime(o.arrivedAt) }}</span></div>
+      <div class="time-row" v-if="o.completedAt"><span>完成</span><span>{{ formatTime(o.completedAt) }}</span></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-section" v-if="o">
+      <button v-if="o.status === 'pending'" class="btn-pay" @click="showPayDialog = true">去支付 ¥{{ o.totalPrice }}</button>
+      <button v-if="['pending', 'paid'].includes(o.status)" class="btn-cancel" @click="showCancelConfirm = true">取消订单</button>
+      <div v-if="!['pending', 'paid', 'cancelled', 'disputed'].includes(o.status)" class="status-hint">
+        <span v-if="o.status === 'dispatched'">司机正在前往取货...</span>
+        <span v-else-if="['arrived', 'loading'].includes(o.status)">司机正在装货...</span>
+        <span v-else-if="o.status === 'delivering'">司机正在送货中...</span>
+        <span v-else-if="o.status === 'completed'">🎉 订单已完成</span>
+      </div>
+    </div>
+
+    <div style="height:40px"></div>
+
+    <!-- Pay Dialog -->
+    <div class="dialog-overlay" v-if="showPayDialog" @click.self="showPayDialog = false">
+      <div class="dialog pay-dialog">
+        <h3>确认支付</h3>
+        <div class="pay-amount">
+          <span class="pay-label">支付金额</span>
+          <span class="pay-num">¥{{ o?.totalPrice }}</span>
+        </div>
+        <div class="pay-method">
+          <span>{{ o?.paymentMethod === 'wechat' ? '💚 微信支付' : '💙 支付宝' }}</span>
+        </div>
+        <button class="btn-confirm-pay" :disabled="paying" @click="handlePay">
+          {{ paying ? '支付中...' : '确认支付' }}
+        </button>
+        <button class="btn-dialog-cancel" @click="showPayDialog = false">取消</button>
+      </div>
+    </div>
+
+    <!-- Pay Result Dialog -->
+    <div class="dialog-overlay" v-if="payResult">
+      <div class="dialog result-dialog">
+        <span class="result-icon" :class="payResult">{{ payResult === 'success' ? '✅' : '❌' }}</span>
+        <h3>{{ payResult === 'success' ? '支付成功' : '支付失败' }}</h3>
+        <p v-if="payResult === 'success'">订单已提交，等待司机接单</p>
+        <p v-else>请重试或更换支付方式</p>
+        <button class="btn-confirm-pay" @click="closePayResult">{{ payResult === 'success' ? '查看订单' : '重新支付' }}</button>
+      </div>
+    </div>
+
+    <!-- Cancel Confirm Dialog -->
+    <div class="dialog-overlay" v-if="showCancelConfirm" @click.self="showCancelConfirm = false">
+      <div class="dialog">
+        <h3>确认取消订单？</h3>
+        <p class="dialog-hint">取消后无法恢复，确定要取消此订单吗？</p>
+        <div class="dialog-actions">
+          <button class="btn-dialog-cancel" @click="showCancelConfirm = false">再想想</button>
+          <button class="btn-dialog-danger" @click="handleCancel">确认取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useOrderStore } from '../../stores/order';
+
+const route = useRoute();
+const router = useRouter();
+const orderStore = useOrderStore();
+
+const o = ref<any>(null);
+const showPayDialog = ref(false);
+const showCancelConfirm = ref(false);
+const payResult = ref<string | null>(null);
+const paying = ref(false);
+
+const statusMap: Record<string, string> = {
+  pending: '待支付', paid: '待接单', dispatched: '已接单',
+  arrived: '已到达', loading: '装货中', delivering: '运输中',
+  completed: '已完成', cancelled: '已取消', disputed: '纠纷中',
+};
+
+const statusOrder = ['pending', 'paid', 'dispatched', 'arrived', 'loading', 'delivering', 'completed'];
+const stepLabels: Record<string, string> = {
+  pending: '待支付', paid: '已支付', dispatched: '已接单',
+  arrived: '已到达', loading: '装货中', delivering: '运输中', completed: '已完成',
+};
+
+const progressSteps = computed(() => {
+  const currentIdx = statusOrder.indexOf(o.value?.status);
+  return statusOrder.map((key, idx) => ({
+    key,
+    label: stepLabels[key],
+    done: idx < currentIdx,
+    current: idx === currentIdx,
+  }));
+});
+
+const progressPercent = computed(() => {
+  const currentIdx = statusOrder.indexOf(o.value?.status);
+  if (currentIdx < 0) return 0;
+  const steps = statusOrder.length - 1;
+  return steps > 0 ? (currentIdx / steps) * 100 : 0;
+});
+
+onMounted(async () => {
+  const id = route.query.id as string;
+  if (id) {
+    try {
+      await orderStore.fetchOrderDetail(id);
+      o.value = orderStore.currentOrder;
+    } catch (e) {
+      alert('订单不存在');
+      router.back();
+    }
+  }
+});
+
+async function handlePay() {
+  if (!o.value || paying.value) return;
+  paying.value = true;
+  try {
+    await orderStore.payOrder(o.value.id);
+    payResult.value = 'success';
+    o.value.status = 'paid';
+  } catch (e: any) {
+    payResult.value = 'failed';
+  }
+  paying.value = false;
+  showPayDialog.value = false;
+}
+
+function closePayResult() {
+  payResult.value = null;
+  if (o.value?.status === 'paid') {
+    // refresh
+    orderStore.fetchOrderDetail(o.value.id).then(() => { o.value = orderStore.currentOrder; });
+  }
+}
+
+async function handleCancel() {
+  if (!o.value) return;
+  try {
+    await orderStore.cancelOrder(o.value.id);
+    showCancelConfirm.value = false;
+    o.value.status = 'cancelled';
+  } catch (e: any) {
+    alert(e?.response?.data?.message || '取消失败');
+  }
+}
+
+function formatTime(d: string) {
+  if (!d) return '';
+  const date = new Date(d);
+  const m = date.getMonth() + 1;
+  const day = date.getDate();
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  return `${m}/${day} ${h}:${min}`;
+}
+</script>
+
+<style scoped>
+.page { min-height: 100vh; background: var(--color-bg); }
+
+/* Header */
+.page-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--color-border); }
+.page-header h2 { font-size: var(--font-size-lg); font-weight: 700; }
+.back-btn { cursor: pointer; font-size: 20px; color: var(--color-text); width: 32px; }
+
+/* Status Bar */
+.status-bar { padding: 20px 16px; color: #fff; text-align: center; }
+.status-bar.pending { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); }
+.status-bar.paid, .status-bar.dispatched { background: linear-gradient(135deg, #2196f3, #1976d2); }
+.status-bar.arrived, .status-bar.loading { background: linear-gradient(135deg, var(--color-warning), #f57c00); }
+.status-bar.delivering { background: linear-gradient(135deg, #4caf50, #388e3c); }
+.status-bar.completed { background: linear-gradient(135deg, var(--color-success), #05a050); }
+.status-bar.cancelled { background: linear-gradient(135deg, #999, #777); }
+.status-bar h2 { font-size: var(--font-size-xl); margin: 0; }
+.order-no { font-size: var(--font-size-xs); opacity: 0.85; margin-top: 4px; }
+
+/* Progress */
+.progress-section { background: #fff; margin: 0 12px 8px; border-radius: var(--radius-md); padding: 20px 16px 16px; }
+.progress-track { height: 4px; background: var(--color-border); border-radius: 2px; margin-bottom: 10px; position: relative; }
+.progress-fill { height: 100%; background: var(--color-primary); border-radius: 2px; transition: width 0.5s ease; }
+.progress-steps { display: flex; justify-content: space-between; }
+.progress-step { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; }
+.progress-step.done .step-dot { background: var(--color-primary); }
+.progress-step.current .step-dot { background: var(--color-primary); box-shadow: 0 0 0 4px rgba(255,107,53,0.25); width: 10px; height: 10px; }
+.step-label { font-size: 10px; color: var(--color-text-muted); white-space: nowrap; }
+.progress-step.done .step-label, .progress-step.current .step-label { color: var(--color-primary); font-weight: 600; }
+.progress-step.current .step-label { font-size: 11px; }
+
+/* Sections */
+.section { background: #fff; margin: 8px 12px; border-radius: var(--radius-md); padding: 16px; }
+.sec-title { font-size: var(--font-size-base); font-weight: 700; margin-bottom: 12px; }
+
+/* Address */
+.addr-block { display: flex; flex-direction: column; }
+.addr-row { display: flex; gap: 10px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.dot.pickup { background: var(--color-success); }
+.dot.dropoff { background: var(--color-danger); }
+.addr-divider-line { width: 1px; flex: 1; border-left: 1px dashed #ddd; margin: 4px 0 4px 4px; min-height: 12px; }
+.addr-content { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; flex: 1; }
+.addr-tag { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #fff; background: var(--color-success); flex-shrink: 0; white-space: nowrap; }
+.addr-tag.send { background: var(--color-danger); }
+.addr-text { font-size: var(--font-size-sm); color: var(--color-text); display: block; }
+.addr-contact { font-size: var(--font-size-xs); color: var(--color-text-muted); display: block; margin-top: 2px; }
+
+/* Driver Card */
+.driver-card { display: flex; align-items: center; gap: 12px; }
+.driver-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary); color: #fff; font-size: var(--font-size-lg); font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.driver-info { flex: 1; display: flex; flex-direction: column; }
+.driver-name { font-size: var(--font-size-base); font-weight: 600; }
+.driver-plate { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.driver-vehicle-type { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+.driver-call { font-size: 28px; text-decoration: none; cursor: pointer; flex-shrink: 0; }
+
+/* Price */
+.price-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.price-row.total { border-top: 1px solid var(--color-divider); padding-top: 10px; margin-top: 6px; font-size: var(--font-size-base); font-weight: 700; color: var(--color-text); }
+.total-num { color: var(--color-primary); font-size: var(--font-size-xl); }
+.tip-highlight { color: var(--color-warning); font-weight: 600; }
+
+.remark-text { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* Time */
+.time-row { display: flex; justify-content: space-between; padding: 3px 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* Photos */
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.photo-item { aspect-ratio: 1; background: var(--color-bg); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: var(--font-size-sm); color: var(--color-text-muted); }
+
+/* Actions */
+.action-section { padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; }
+.btn-pay { width: 100%; height: 50px; background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; }
+.btn-pay:active { background: var(--color-primary-dark); }
+.btn-cancel { width: 100%; height: 44px; background: #fff; color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
+.status-hint { text-align: center; font-size: var(--font-size-base); color: var(--color-text-secondary); padding: 12px; }
+
+/* Dialogs */
+.dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
+.dialog { background: #fff; border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 320px; text-align: center; }
+.dialog h3 { font-size: var(--font-size-lg); margin-bottom: 12px; }
+.dialog-hint { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: 20px; }
+.pay-amount { display: flex; flex-direction: column; gap: 4px; margin: 16px 0; }
+.pay-label { font-size: var(--font-size-sm); color: var(--color-text-muted); }
+.pay-num { font-size: 36px; font-weight: 700; color: var(--color-primary); }
+.pay-method { font-size: var(--font-size-base); margin-bottom: 16px; color: var(--color-text-secondary); }
+.result-icon { font-size: 56px; display: block; margin-bottom: 12px; }
+.result-dialog h3 { font-size: var(--font-size-xl); }
+.result-dialog p { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 16px; }
+.btn-confirm-pay { width: 100%; height: 48px; background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; margin-bottom: 8px; }
+.btn-confirm-pay:active { background: var(--color-primary-dark); }
+.btn-confirm-pay:disabled { background: #ccc; }
+.btn-dialog-cancel { width: 100%; height: 44px; background: var(--color-bg); color: var(--color-text-secondary); border: none; border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
+.dialog-actions { display: flex; gap: 10px; }
+.dialog-actions button { flex: 1; }
+.btn-dialog-danger { height: 44px; background: var(--color-danger); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
+</style>

@@ -1,0 +1,25 @@
+{
+  "name": "open-trade",
+  "version": "0.1.0",
+  "private": true,
+  "description": "货运平台 - 货拉拉仿站",
+  "scripts": {
+    "dev:server": "pnpm --filter @open-trade/server dev",
+    "dev:web": "pnpm --filter @open-trade/web dev",
+    "dev:admin": "pnpm --filter @open-trade/admin dev",
+    "build:server": "pnpm --filter @open-trade/server build",
+    "build:web": "pnpm --filter @open-trade/web build",
+    "build:admin": "pnpm --filter @open-trade/admin build",
+    "build:shared": "pnpm --filter @open-trade/shared build",
+    "db:migrate": "pnpm --filter @open-trade/server db:migrate",
+    "db:seed": "pnpm --filter @open-trade/server db:seed",
+    "lint": "pnpm -r lint"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["@nestjs/core", "@prisma/client", "@prisma/engines", "esbuild", "prisma", "vue-demi"]
+  }
+}
