@@ -136,6 +136,21 @@
       </div>
     </div>
 
+    <!-- Review (completed only) -->
+    <div class="section" v-if="o?.status === 'completed'">
+      <div class="sec-title">⭐ 评价司机</div>
+      <div v-if="existingReview" class="review-done">
+        <div class="review-stars">{{ '★'.repeat(existingReview.rating) }}{{ '☆'.repeat(5 - existingReview.rating) }}</div>
+        <p class="review-content" v-if="existingReview.content">{{ existingReview.content }}</p>
+      </div>
+      <button v-else class="btn-review" @click="showReviewDialog = true">评价司机</button>
+    </div>
+
+    <!-- Complaint (paid ~ completed, not disputed) -->
+    <div class="section" v-if="canComplain">
+      <button class="btn-complaint" @click="showComplaintDialog = true">投诉订单</button>
+    </div>
+
     <div style="height:40px"></div>
 
     <!-- Pay Dialog -->
@@ -178,6 +193,44 @@
         </div>
       </div>
     </div>
+
+    <!-- Review Dialog -->
+    <div class="dialog-overlay" v-if="showReviewDialog" @click.self="showReviewDialog = false">
+      <div class="dialog">
+        <h3>评价司机</h3>
+        <div class="star-picker">
+          <span v-for="s in 5" :key="s" class="star-btn" :class="{ active: reviewRating >= s }" @click="reviewRating = s">
+            {{ reviewRating >= s ? '★' : '☆' }}
+          </span>
+        </div>
+        <textarea class="dialog-textarea" v-model="reviewContent" placeholder="说说你的体验（选填）..." maxlength="200"></textarea>
+        <div class="dialog-actions">
+          <button class="btn-dialog-cancel" @click="showReviewDialog = false">取消</button>
+          <button class="btn-confirm-pay" @click="handleReview" :disabled="submittingReview">
+            {{ submittingReview ? '提交中...' : '提交评价' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complaint Dialog -->
+    <div class="dialog-overlay" v-if="showComplaintDialog" @click.self="showComplaintDialog = false">
+      <div class="dialog">
+        <h3>投诉订单</h3>
+        <div class="complaint-types">
+          <span v-for="t in complaintTypeOptions" :key="t.value" class="complaint-type-tag" :class="{ active: complaintType === t.value }" @click="complaintType = t.value">
+            {{ t.label }}
+          </span>
+        </div>
+        <textarea class="dialog-textarea" v-model="complaintContent" placeholder="请描述具体问题..." maxlength="500"></textarea>
+        <div class="dialog-actions">
+          <button class="btn-dialog-cancel" @click="showComplaintDialog = false">取消</button>
+          <button class="btn-dialog-danger" @click="handleComplaint" :disabled="submittingComplaint || !complaintContent.trim()">
+            {{ submittingComplaint ? '提交中...' : '提交投诉' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -185,6 +238,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useOrderStore } from '../../stores/order';
+import { reviewApi, complaintApi } from '../../utils/api';
 
 const route = useRoute();
 const router = useRouter();
@@ -195,6 +249,35 @@ const showPayDialog = ref(false);
 const showCancelConfirm = ref(false);
 const payResult = ref<string | null>(null);
 const paying = ref(false);
+
+// Review state
+const showReviewDialog = ref(false);
+const reviewRating = ref(5);
+const reviewContent = ref('');
+const submittingReview = ref(false);
+const existingReview = ref<any>(null);
+
+// Complaint state
+const showComplaintDialog = ref(false);
+const complaintType = ref('service');
+const complaintContent = ref('');
+const submittingComplaint = ref(false);
+
+const complaintTypeOptions = [
+  { value: 'service', label: '服务态度' },
+  { value: 'damage', label: '货物损坏' },
+  { value: 'delay', label: '配送延迟' },
+  { value: 'overcharge', label: '乱收费' },
+  { value: 'missing', label: '货物丢失' },
+  { value: 'other', label: '其他' },
+];
+
+const COMPLAINABLE_STATUSES = ['paid', 'dispatched', 'arrived', 'loading', 'delivering', 'completed'];
+
+const canComplain = computed(() => {
+  if (!o.value) return false;
+  return COMPLAINABLE_STATUSES.includes(o.value.status);
+});
 
 const statusMap: Record<string, string> = {
   pending: '待支付', paid: '待接单', dispatched: '已接单',
@@ -234,9 +317,51 @@ onMounted(async () => {
     } catch (e) {
       alert('订单不存在');
       router.back();
+      return;
+    }
+
+    if (o.value?.status === 'completed') {
+      try {
+        existingReview.value = await reviewApi.getByOrder(id) as any;
+      } catch (e) { /* no review yet */ }
     }
   }
 });
+
+async function handleReview() {
+  if (!o.value || submittingReview.value) return;
+  submittingReview.value = true;
+  try {
+    await reviewApi.create({
+      orderId: o.value.id,
+      rating: reviewRating.value,
+      content: reviewContent.value.trim() || undefined,
+    });
+    existingReview.value = { rating: reviewRating.value, content: reviewContent.value.trim() };
+    showReviewDialog.value = false;
+  } catch (e: any) {
+    alert(e?.response?.data?.message || '评价失败');
+  }
+  submittingReview.value = false;
+}
+
+async function handleComplaint() {
+  if (!o.value || submittingComplaint.value || !complaintContent.value.trim()) return;
+  submittingComplaint.value = true;
+  try {
+    await complaintApi.create({
+      orderId: o.value.id,
+      type: complaintType.value,
+      content: complaintContent.value.trim(),
+    });
+    o.value.status = 'disputed';
+    showComplaintDialog.value = false;
+    alert('投诉已提交，客服将尽快处理');
+  } catch (e: any) {
+    alert(e?.response?.data?.message || '投诉失败');
+  }
+  submittingComplaint.value = false;
+}
 
 async function handlePay() {
   if (!o.value || paying.value) return;
@@ -298,6 +423,7 @@ function formatTime(d: string) {
 .status-bar.delivering { background: linear-gradient(135deg, #4caf50, #388e3c); }
 .status-bar.completed { background: linear-gradient(135deg, var(--color-success), #05a050); }
 .status-bar.cancelled { background: linear-gradient(135deg, #999, #777); }
+.status-bar.disputed { background: linear-gradient(135deg, #e74c3c, #c0392b); }
 .status-bar h2 { font-size: var(--font-size-xl); margin: 0; }
 .order-no { font-size: var(--font-size-xs); opacity: 0.85; margin-top: 4px; }
 
@@ -381,4 +507,25 @@ function formatTime(d: string) {
 .dialog-actions { display: flex; gap: 10px; }
 .dialog-actions button { flex: 1; }
 .btn-dialog-danger { height: 44px; background: var(--color-danger); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
+
+/* Review */
+.btn-review { width: 100%; height: 44px; background: linear-gradient(135deg, #ff6b35, #ff8c5a); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-base); font-weight: 600; cursor: pointer; }
+.btn-review:active { opacity: 0.85; }
+.review-done { text-align: center; }
+.review-stars { font-size: 28px; color: #f5a623; letter-spacing: 4px; }
+.review-content { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: 8px; }
+
+.star-picker { display: flex; justify-content: center; gap: 12px; margin: 16px 0; }
+.star-btn { font-size: 40px; color: #ddd; cursor: pointer; transition: color 0.15s; user-select: none; }
+.star-btn.active { color: #f5a623; }
+
+.dialog-textarea { width: 100%; min-height: 80px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px; font-size: var(--font-size-sm); resize: vertical; margin-bottom: 12px; box-sizing: border-box; font-family: inherit; }
+.dialog-textarea:focus { outline: none; border-color: var(--color-primary); }
+
+/* Complaint */
+.btn-complaint { width: 100%; height: 44px; background: #fff; color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
+.btn-complaint:active { background: var(--color-bg); }
+.complaint-types { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.complaint-type-tag { padding: 6px 14px; border: 1px solid var(--color-border); border-radius: 20px; font-size: var(--font-size-sm); cursor: pointer; transition: all 0.15s; }
+.complaint-type-tag.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 </style>

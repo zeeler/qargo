@@ -30,6 +30,16 @@ export const orderApi = {
   dispatch: (id: string) => http.put(`/order/${id}/dispatch`),
 };
 
+export const reviewApi = {
+  create: (data: any) => http.post('/review', data),
+  getByOrder: (orderId: string) => http.get(`/review/order/${orderId}`),
+};
+
+export const complaintApi = {
+  create: (data: any) => http.post('/complaint', data),
+  getMy: () => http.get('/complaint/my'),
+};
+
 export const driverApi = {
   register: (data: any) => http.post('/driver/register', data),
   getStatus: () => http.get('/driver/status'),

@@ -12,6 +12,9 @@ import { SmsModule } from './modules/sms/sms.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
+import { ReviewModule } from './modules/review/review.module';
+import { ComplaintModule } from './modules/complaint/complaint.module';
+
 @Module({
   imports: [
     PrismaModule,
@@ -23,6 +26,8 @@ import { RolesGuard } from './common/guards/roles.guard';
     PaymentModule,
     AdminModule,
     SmsModule,
+    ReviewModule,
+    ComplaintModule,
   ],
   providers: [
     {

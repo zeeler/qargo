@@ -65,6 +65,15 @@ export class AdminController {
     return this.adminService.resolveComplaint(id, body.resolution, user.userId);
   }
 
+  @Put('complaints/:id/dismiss')
+  dismissComplaint(
+    @Param('id') id: string,
+    @Body() body: { resolution?: string },
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.adminService.dismissComplaint(id, body.resolution, user.userId);
+  }
+
   @Get('pricing')
   getPricingRules() {
     return this.adminService.getPricingRules();

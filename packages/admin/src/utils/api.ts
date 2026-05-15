@@ -50,6 +50,8 @@ export const adminApi = {
   getComplaints: () => api.get('/admin/complaints'),
   resolveComplaint: (id: string, resolution: string) =>
     api.put(`/admin/complaints/${id}/resolve`, { resolution }),
+  dismissComplaint: (id: string, resolution?: string) =>
+    api.put(`/admin/complaints/${id}/dismiss`, { resolution }),
   getPricingRules: () => api.get('/admin/pricing'),
   updatePricing: (id: string, data: { basePrice?: number; pricePerKm?: number; includedKm?: number }) =>
     api.put(`/admin/pricing/${id}`, data),

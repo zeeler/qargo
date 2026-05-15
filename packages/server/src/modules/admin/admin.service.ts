@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { ComplaintStatus } from '@open-trade/shared';
 
 @Injectable()
 export class AdminService {
@@ -82,7 +83,14 @@ export class AdminService {
   async resolveComplaint(complaintId: string, resolution: string, adminUserId: string) {
     return this.prisma.complaint.update({
       where: { id: complaintId },
-      data: { status: 'resolved', resolution, adminId: adminUserId },
+      data: { status: ComplaintStatus.RESOLVED, resolution, adminId: adminUserId },
+    });
+  }
+
+  async dismissComplaint(complaintId: string, resolution: string | undefined, adminUserId: string) {
+    return this.prisma.complaint.update({
+      where: { id: complaintId },
+      data: { status: ComplaintStatus.DISMISSED, resolution: resolution || null, adminId: adminUserId },
     });
   }
 

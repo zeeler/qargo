@@ -10,6 +10,8 @@
 - **首页** — 地址选择、20 种车型展示、运费预估（基于 Haversine 距离 + 分段计价）
 - **下单** — 填写货物信息、联系人、小费、支付方式
 - **订单管理** — 查看全部/待支付/进行中/已完成订单，支持支付、取消
+- **评价系统** — 订单完成后可对司机评分（1-5星）+ 文字评价
+- **投诉反馈** — 已支付订单可提交投诉，自动转为纠纷状态，管理端可处理/驳回
 - **个人中心** — 个人资料、收货地址管理、订单入口
 
 ### 司机端
@@ -24,7 +26,7 @@
 - **数据看板** — 用户数、司机数、订单数、交易额等 7 项统计
 - **司机审核** — 审核/驳回司机注册申请
 - **订单管理** — 查看全部订单，支持取消和完成操作
-- **投诉处理** — 查看用户投诉并处理
+- **投诉处理** — 查看用户投诉，支持处理/驳回，填写处理意见
 - **定价管理** — 编辑各车型的基础价格、包含公里数、每公里单价
 
 ## 技术栈
@@ -67,6 +69,8 @@ open-trade/
 │   │           ├── order/       # 订单模块 (CRUD/接单/运输流程)
 │   │           ├── payment/     # 支付模块
 │   │           ├── admin/       # 管理后台模块
+│   │           ├── review/      # 评价模块
+│   │           ├── complaint/   # 投诉模块
 │   │           └── sms/         # 短信服务 (Mock)
 │   ├── web/                     # 用户端前端 (Vue 3)
 │   │   └── src/
@@ -187,10 +191,15 @@ cd packages/server && node dist/main.js
 | 司机订单 | `PUT /order/:id/photo` | 上传货物照片 |
 | 司机订单 | `PUT /order/:id/depart` | 出发 |
 | 司机订单 | `PUT /order/:id/complete` | 完成送达 |
+| 评价 | `POST /review` | 评价已完成订单 |
+| 评价 | `GET /review/order/:orderId` | 查看订单评价 |
+| 评价 | `GET /review/driver/:driverId` | 查看司机评价列表 |
+| 投诉 | `POST /complaint` | 提交投诉（订单自动变为纠纷状态） |
+| 投诉 | `GET /complaint/my` | 查看我的投诉 |
 | 管理后台 | `GET /admin/statistics/dashboard` | 数据看板 |
 | 管理后台 | `GET/PUT /admin/drivers/*` | 司机审核 |
 | 管理后台 | `GET/PUT /admin/orders/*` | 订单管理 |
-| 管理后台 | `GET/PUT /admin/complaints/*` | 投诉处理 |
+| 管理后台 | `GET/PUT /admin/complaints/*` | 投诉处理（处理/驳回） |
 | 管理后台 | `GET/PUT /admin/pricing/*` | 定价管理 |
 
 ## 数据库模型
@@ -226,7 +235,7 @@ pending (待支付) → paid (已支付) → dispatched (已派单) → arrived 
                                                        completed (已完成)
 
 任意状态 → cancelled (已取消)
-任意状态 → disputed (争议中，通过投诉触发)
+paid~completed → disputed (用户投诉触发，可被管理端处理/驳回恢复)
 ```
 
 ## 测试
@@ -236,8 +245,10 @@ pending (待支付) → paid (已支付) → dispatched (已派单) → arrived 
 - 用户注册/登录/登出
 - 首页地址选择、车型展示、费用预估
 - 订单创建、支付、取消、状态追踪
+- 订单完成后的评价评分
+- 订单投诉提交与纠纷处理
 - 司机注册、审核、接单、运输流程
-- 管理后台数据看板、审核、订单管理、定价
+- 管理后台数据看板、审核、订单管理、投诉处理/驳回、定价
 - 跨角色完整业务闭环
 
 运行方式：启动 `pnpm dev:server` + `pnpm dev:web`，按照 TEST_CASES.md 逐项验证。
