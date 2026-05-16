@@ -61,11 +61,12 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { orderApi } from '../../utils/api';
 
 const router = useRouter();
+const route = useRoute();
 const authStore = useAuthStore();
 
 const orders = ref<any[]>([]);
@@ -110,6 +111,11 @@ const emptyDesc = computed(() => {
 });
 
 onMounted(async () => {
+  // 支持 ?tab=active 等查询参数预设筛选
+  const tabParam = route.query.tab as string;
+  if (['all', 'pending', 'active', 'done'].includes(tabParam)) {
+    activeTab.value = tabParam;
+  }
   try {
     orders.value = await orderApi.getList();
   } catch (e) {

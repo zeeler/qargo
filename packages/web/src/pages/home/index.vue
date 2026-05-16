@@ -11,7 +11,10 @@
         <div class="header-actions">
           <span v-if="authStore.isDriver" class="action-btn" @click="router.push('/driver/orders')">司机端</span>
           <span v-else-if="!authStore.isLoggedIn" class="action-btn" @click="router.push('/auth/login')">登录</span>
-          <span v-else class="action-btn" @click="router.push('/user/profile')">我的</span>
+          <template v-else>
+            <span v-if="activeOrderCount > 0" class="action-btn active-badge" @click="router.push('/order/list?tab=active')">{{ activeOrderCount }} 单进行中</span>
+            <span class="action-btn" @click="router.push('/user/profile')">我的</span>
+          </template>
         </div>
       </div>
     </header>
@@ -124,7 +127,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
 import { useOrderStore } from '../../stores/order';
-import { vehicleApi } from '../../utils/api';
+import { vehicleApi, orderApi } from '../../utils/api';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -153,6 +156,7 @@ const vehicleTypes = ref<any[]>([]);
 const pricingMap = ref<Record<string, any>>({});
 const priceResult = ref<any>(null);
 const calculating = ref(false);
+  const activeOrderCount = ref(0);
 
 const canOrder = computed(() => selectedType.value && pickupAddress.value && dropoffAddress.value);
 
@@ -165,6 +169,16 @@ onMounted(async () => {
       for (const p of pricing) pricingMap.value[p.vehicleTypeCode] = p;
     }
   } catch (e) { /* pricing from DB may not exist yet */ }
+
+  // 获取进行中的订单数量
+  if (authStore.isLoggedIn) {
+    try {
+      const orders: any[] = await orderApi.getList();
+      activeOrderCount.value = orders.filter(
+        (o: any) => ['paid', 'dispatched', 'arrived', 'loading', 'delivering'].includes(o.status)
+      ).length;
+    } catch (e) { /* ignore */ }
+  }
 });
 
 // Address logic
@@ -284,7 +298,8 @@ function goCreateOrder() {
 .loc-icon { font-size: 16px; }
 .loc-text { color: #fff; font-size: var(--font-size-lg); font-weight: 600; }
 .loc-arrow { color: rgba(255,255,255,0.7); font-size: 12px; margin-left: 2px; }
-.action-btn { color: #fff; font-size: var(--font-size-sm); padding: 6px 12px; background: rgba(255,255,255,0.2); border-radius: var(--radius-round); cursor: pointer; }
+.action-btn { color: #fff; font-size: var(--font-size-sm); padding: 6px 12px; background: rgba(255,255,255,0.2); border-radius: var(--radius-round); cursor: pointer; white-space: nowrap; }
+.active-badge { background: #fff; color: var(--color-primary); font-weight: 600; margin-right: 6px; }
 
 /* Service Tabs */
 .service-tabs { display: flex; gap: 12px; padding: 12px 16px; background: #fff; margin-bottom: 8px; }

@@ -4,7 +4,7 @@
     <header class="page-header">
       <span class="back-btn" @click="router.back()">←</span>
       <h2>订单详情</h2>
-      <span></span>
+      <span class="home-btn" @click="router.push('/')">🏠</span>
     </header>
 
     <!-- Status Bar -->
@@ -99,9 +99,9 @@
     </div>
 
     <!-- Payment Method -->
-    <div class="section" v-if="o?.paymentMethod">
+    <div class="section" v-if="o?.payment?.method">
       <div class="sec-title">💳 支付方式</div>
-      <span>{{ o.paymentMethod === 'wechat' ? '微信支付' : '支付宝' }}</span>
+      <span>{{ o.payment.method === 'wechat' ? '微信支付' : '支付宝' }}</span>
     </div>
 
     <!-- Photos -->
@@ -153,21 +153,63 @@
 
     <div style="height:40px"></div>
 
-    <!-- Pay Dialog -->
-    <div class="dialog-overlay" v-if="showPayDialog" @click.self="showPayDialog = false">
-      <div class="dialog pay-dialog">
-        <h3>确认支付</h3>
-        <div class="pay-amount">
-          <span class="pay-label">支付金额</span>
-          <span class="pay-num">¥{{ o?.totalPrice }}</span>
+    <!-- WeChat Pay Dialog -->
+    <div class="dialog-overlay" v-if="showPayDialog && o?.payment?.method === 'wechat'" @click.self="showPayDialog = false">
+      <div class="dialog wechat-pay-dialog">
+        <div class="wechat-header">
+          <span class="wechat-brand">微信支付</span>
+          <span class="wechat-close" @click="showPayDialog = false">✕</span>
         </div>
-        <div class="pay-method">
-          <span>{{ o?.paymentMethod === 'wechat' ? '💚 微信支付' : '💙 支付宝' }}</span>
+        <div class="wechat-amount-section">
+          <span class="wechat-yuan">¥</span>
+          <span class="wechat-num">{{ o?.totalPrice }}</span>
         </div>
-        <button class="btn-confirm-pay" :disabled="paying" @click="handlePay">
-          {{ paying ? '支付中...' : '确认支付' }}
+        <div class="wechat-merchant">
+          <span class="wechat-merchant-label">收款方</span>
+          <span class="wechat-merchant-name">Cargo 货运平台</span>
+        </div>
+        <div class="wechat-divider"></div>
+        <div class="wechat-pay-method-row">
+          <span class="wechat-pay-icon">💳</span>
+          <span>零钱</span>
+          <span class="wechat-check">✓</span>
+        </div>
+        <div class="wechat-divider"></div>
+        <button class="wechat-pay-btn" :disabled="paying" @click="handlePay">
+          {{ paying ? '支付中...' : '立即支付' }}
         </button>
-        <button class="btn-dialog-cancel" @click="showPayDialog = false">取消</button>
+      </div>
+    </div>
+
+    <!-- Alipay Dialog -->
+    <div class="dialog-overlay" v-if="showPayDialog && o?.payment?.method === 'alipay'" @click.self="showPayDialog = false">
+      <div class="dialog alipay-dialog">
+        <div class="alipay-header">
+          <span class="alipay-logo">支</span>
+          <span class="alipay-brand">支付宝</span>
+        </div>
+        <div class="alipay-body">
+          <div class="alipay-amount-label">付款金额</div>
+          <div class="alipay-amount">¥ {{ o?.totalPrice }}</div>
+          <div class="alipay-info-row">
+            <span>收款方</span>
+            <span>Cargo 货运平台</span>
+          </div>
+          <div class="alipay-info-row">
+            <span>付款方式</span>
+            <span>花呗</span>
+          </div>
+          <div class="alipay-info-row">
+            <span>订单号</span>
+            <span>{{ o?.orderNo }}</span>
+          </div>
+        </div>
+        <div class="alipay-actions">
+          <button class="alipay-cancel-btn" @click="showPayDialog = false">取消</button>
+          <button class="alipay-confirm-btn" :disabled="paying" @click="handlePay">
+            {{ paying ? '支付中...' : '确认付款' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -414,6 +456,7 @@ function formatTime(d: string) {
 .page-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--color-border); }
 .page-header h2 { font-size: var(--font-size-lg); font-weight: 700; }
 .back-btn { cursor: pointer; font-size: 20px; color: var(--color-text); width: 32px; }
+.home-btn { cursor: pointer; font-size: 18px; width: 32px; text-align: right; }
 
 /* Status Bar */
 .status-bar { padding: 20px 16px; color: #fff; text-align: center; }
@@ -528,4 +571,193 @@ function formatTime(d: string) {
 .complaint-types { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
 .complaint-type-tag { padding: 6px 14px; border: 1px solid var(--color-border); border-radius: 20px; font-size: var(--font-size-sm); cursor: pointer; transition: all 0.15s; }
 .complaint-type-tag.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+
+/* WeChat Pay Dialog */
+.wechat-pay-dialog {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  overflow: hidden;
+}
+.wechat-header {
+  background: #07C160;
+  color: #fff;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.wechat-brand {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.wechat-close {
+  position: absolute;
+  right: 16px;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+.wechat-amount-section {
+  padding: 28px 16px 8px;
+}
+.wechat-yuan {
+  font-size: 24px;
+  font-weight: 400;
+  color: #333;
+  vertical-align: top;
+}
+.wechat-num {
+  font-size: 48px;
+  font-weight: 700;
+  color: #333;
+  line-height: 1;
+}
+.wechat-merchant {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #888;
+}
+.wechat-merchant-name {
+  color: #333;
+  font-weight: 500;
+}
+.wechat-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 0 16px;
+}
+.wechat-pay-method-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  font-size: 15px;
+  color: #333;
+}
+.wechat-pay-icon {
+  font-size: 18px;
+}
+.wechat-check {
+  margin-left: auto;
+  color: #07C160;
+  font-weight: 700;
+  font-size: 16px;
+}
+.wechat-pay-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 20px 16px 24px;
+  height: 48px;
+  background: #07C160;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 2px;
+}
+.wechat-pay-btn:active { background: #06ad56; }
+.wechat-pay-btn:disabled { background: #a0e0bf; }
+
+/* Alipay Dialog */
+.alipay-dialog {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
+}
+.alipay-header {
+  background: linear-gradient(135deg, #1677FF, #1677FF);
+  color: #fff;
+  padding: 18px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.alipay-logo {
+  background: #fff;
+  color: #1677FF;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+}
+.alipay-brand {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+.alipay-body {
+  padding: 24px 16px 0;
+  text-align: center;
+}
+.alipay-amount-label {
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 8px;
+}
+.alipay-amount {
+  font-size: 40px;
+  font-weight: 700;
+  color: #1677FF;
+  margin-bottom: 24px;
+}
+.alipay-info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #666;
+  border-bottom: 1px solid #f5f5f5;
+}
+.alipay-info-row span:last-child {
+  color: #333;
+  font-weight: 500;
+}
+.alipay-actions {
+  display: flex;
+  gap: 0;
+  margin-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+.alipay-cancel-btn {
+  flex: 1;
+  height: 52px;
+  background: #fff;
+  color: #999;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  border-right: 1px solid #f0f0f0;
+}
+.alipay-cancel-btn:active { background: #f5f5f5; }
+.alipay-confirm-btn {
+  flex: 2;
+  height: 52px;
+  background: #1677FF;
+  color: #fff;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 0 0 12px 0;
+}
+.alipay-confirm-btn:active { background: #1565d9; }
+.alipay-confirm-btn:disabled { background: #93bff5; }
 </style>
