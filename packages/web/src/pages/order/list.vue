@@ -138,29 +138,29 @@ function formatTime(d: string) {
 .page { min-height: 100vh; background: var(--color-bg); }
 
 /* Header */
-.page-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--color-border); }
+.page-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--color-card); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--color-border); }
 .page-header h2 { font-size: var(--font-size-lg); font-weight: 700; }
 .back-btn { cursor: pointer; font-size: 20px; color: var(--color-text); width: 32px; }
 
 /* Filter Tabs */
-.filter-tabs { display: flex; background: #fff; padding: 0 16px; border-bottom: 1px solid var(--color-divider); position: sticky; top: 45px; z-index: 9; }
-.filter-tab { flex: 1; text-align: center; padding: 14px 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; position: relative; }
+.filter-tabs { display: flex; background: var(--color-card); padding: 0 16px; border-bottom: 1px solid var(--color-divider); position: sticky; top: 45px; z-index: 9; }
+.filter-tab { flex: 1; text-align: center; padding: 14px 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; position: relative; }
 .filter-tab.active { color: var(--color-primary); font-weight: 700; border-bottom-color: var(--color-primary); }
 .tab-badge { display: inline-block; background: var(--color-primary); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 4px; vertical-align: top; }
 
 /* Order Cards */
-.order-list { padding: 12px; }
-.order-card { background: #fff; border-radius: var(--radius-md); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); cursor: pointer; transition: transform 0.1s; }
-.order-card:active { transform: scale(0.99); }
+.order-list { padding: 12px 16px; }
+.order-card { background: var(--color-card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); cursor: pointer; transition: transform 0.15s ease; }
+.order-card:active { transform: scale(0.985); }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .card-order-no { font-size: var(--font-size-xs); color: var(--color-text-muted); font-family: monospace; }
 .card-status { font-size: var(--font-size-xs); padding: 3px 10px; border-radius: 10px; font-weight: 600; }
-.card-status.pending { background: #fff3e0; color: var(--color-primary); }
+.card-status.pending { background: var(--color-primary-light); color: var(--color-primary); }
 .card-status.paid { background: #e3f2fd; color: var(--color-info); }
-.card-status.dispatched { background: #e3f2fd; color: #1976d2; }
+.card-status.dispatched { background: #e3f2fd; color: var(--color-info); }
 .card-status.arrived, .card-status.loading { background: #fff8e1; color: #f57c00; }
-.card-status.delivering { background: #e8f5e9; color: #388e3c; }
-.card-status.completed { background: #e8f5e9; color: var(--color-success); }
+.card-status.delivering { background: var(--color-primary-light); color: var(--color-success); }
+.card-status.completed { background: var(--color-primary-light); color: var(--color-success); }
 .card-status.cancelled { background: #fce4ec; color: var(--color-danger); }
 
 .card-body { margin-bottom: 10px; }
@@ -183,7 +183,8 @@ function formatTime(d: string) {
 .empty-icon { font-size: 56px; margin-bottom: 16px; }
 .empty-title { font-size: var(--font-size-lg); color: var(--color-text); font-weight: 600; margin-bottom: 8px; }
 .empty-desc { font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: 20px; }
-.btn-go-order, .btn-go-login { padding: 10px 32px; border-radius: var(--radius-round); font-size: var(--font-size-base); border: none; cursor: pointer; }
-.btn-go-order { background: var(--color-primary); color: #fff; }
-.btn-go-login { background: var(--color-bg); color: var(--color-primary); border: 1px solid var(--color-primary); margin-bottom: 8px; }
+.btn-go-order, .btn-go-login { padding: 10px 32px; border-radius: var(--radius-round); font-size: var(--font-size-base); border: none; cursor: pointer; transition: all 0.2s ease; }
+.btn-go-order { background: var(--color-primary-gradient); color: #fff; }
+.btn-go-order:active { transform: translateY(1px) scale(0.98); }
+.btn-go-login { background: var(--color-card); color: var(--color-primary); border: 1px solid var(--color-primary); margin-bottom: 8px; }
 </style>
