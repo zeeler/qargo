@@ -17,8 +17,8 @@
         </n-card>
       </n-gi>
       <n-gi>
-        <n-card title="总收入" hoverable>
-          <n-h2 style="margin: 0; color: #ff6b35;">¥{{ stats.totalRevenue }}</n-h2>
+        <n-card title="总交易额" hoverable>
+          <n-h2 style="margin: 0; color: #4a9e4e;">¥{{ stats.totalRevenue }}</n-h2>
         </n-card>
       </n-gi>
     </n-grid>

@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #f5f5f5;">
+  <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: #f3f6f3;">
     <n-card title="管理后台登录" style="width: 400px;">
       <n-form>
         <n-form-item label="手机号">

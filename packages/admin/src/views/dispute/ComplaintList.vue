@@ -87,7 +87,7 @@ const columns = [
       if (row.status !== 'pending') return '—';
       return h('span', {}, [
         h('a', {
-          style: 'color: #ff6b35; cursor: pointer; margin-right: 8px;',
+          style: 'color: #4a9e4e; cursor: pointer; margin-right: 8px;',
           onClick: () => openModal(row, 'resolve'),
         }, '处理'),
         h('a', {

@@ -51,7 +51,7 @@ const columns = [
   {
     title: '起步价(元)', key: 'basePrice', width: 110,
     render: (row: any) => h('span', {
-      style: 'color: #ff6b35; cursor: pointer; font-weight: 600;',
+      style: 'color: #4a9e4e; cursor: pointer; font-weight: 600;',
       onClick: () => openEdit(row),
     }, `¥${row.basePrice}`),
   },
