@@ -194,11 +194,11 @@ async function handleComplete() {
 
 /* Action Section */
 .action-section { padding: 16px 12px; }
-.btn-action { width: 100%; height: 56px; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; color: #fff; transition: transform 0.1s; }
-.btn-action:active { transform: scale(0.98); }
+.btn-action { width: 100%; height: 56px; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; color: #fff; transition: all 0.2s ease; }
+.btn-action:active { transform: translateY(1px) scale(0.98); box-shadow: var(--shadow-sm); }
 .btn-action.arrive { background: var(--color-info); }
 .btn-action.photo { background: var(--color-warning); }
-.btn-action.depart { background: #4caf50; }
+.btn-action.depart { background: var(--color-success); }
 .btn-action.complete { background: var(--color-success); }
 .complete-message { text-align: center; padding: 20px; }
 .complete-icon { font-size: 48px; display: block; margin-bottom: 12px; }
@@ -206,13 +206,13 @@ async function handleComplete() {
 .complete-income { font-size: var(--font-size-xl); color: var(--color-primary); font-weight: 700; margin-top: 8px; }
 
 /* Sections */
-.section { background: #fff; margin: 8px 12px; border-radius: var(--radius-md); padding: 16px; }
+.section { background: var(--color-card); margin: 8px 16px; border-radius: var(--radius-md); padding: 16px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); }
 .sec-title { font-size: var(--font-size-base); font-weight: 700; margin-bottom: 12px; }
 
 /* Address Block */
 .addr-block { display: flex; flex-direction: column; }
 .addr-row { display: flex; gap: 10px; align-items: flex-start; }
-.addr-divider { height: 12px; border-left: 1px dashed #ddd; margin-left: 4px; }
+.addr-divider { height: 12px; border-left: 1px dashed var(--color-border); margin-left: 4px; }
 .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
 .dot.pickup { background: var(--color-success); }
 .dot.dropoff { background: var(--color-danger); }
