@@ -453,14 +453,14 @@ function formatTime(d: string) {
 .page { min-height: 100vh; background: var(--color-bg); }
 
 /* Header */
-.page-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--color-border); }
+.page-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: var(--color-card); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--color-border); }
 .page-header h2 { font-size: var(--font-size-lg); font-weight: 700; }
 .back-btn { cursor: pointer; font-size: 20px; color: var(--color-text); width: 32px; }
 .home-btn { cursor: pointer; font-size: 18px; width: 32px; text-align: right; }
 
 /* Status Bar */
 .status-bar { padding: 20px 16px; color: #fff; text-align: center; }
-.status-bar.pending { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); }
+.status-bar.pending { background: var(--color-primary-gradient); }
 .status-bar.paid, .status-bar.dispatched { background: linear-gradient(135deg, #2196f3, #1976d2); }
 .status-bar.arrived, .status-bar.loading { background: linear-gradient(135deg, var(--color-warning), #f57c00); }
 .status-bar.delivering { background: linear-gradient(135deg, #4caf50, #388e3c); }
@@ -471,20 +471,20 @@ function formatTime(d: string) {
 .order-no { font-size: var(--font-size-xs); opacity: 0.85; margin-top: 4px; }
 
 /* Progress */
-.progress-section { background: #fff; margin: 0 12px 8px; border-radius: var(--radius-md); padding: 20px 16px 16px; }
+.progress-section { background: var(--color-card); margin: 0 16px 8px; border-radius: var(--radius-md); padding: 20px 16px 16px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); }
 .progress-track { height: 4px; background: var(--color-border); border-radius: 2px; margin-bottom: 10px; position: relative; }
 .progress-fill { height: 100%; background: var(--color-primary); border-radius: 2px; transition: width 0.5s ease; }
 .progress-steps { display: flex; justify-content: space-between; }
 .progress-step { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-.step-dot { width: 8px; height: 8px; border-radius: 50%; background: #ddd; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border); }
 .progress-step.done .step-dot { background: var(--color-primary); }
-.progress-step.current .step-dot { background: var(--color-primary); box-shadow: 0 0 0 4px rgba(255,107,53,0.25); width: 10px; height: 10px; }
+.progress-step.current .step-dot { background: var(--color-primary); box-shadow: 0 0 0 4px rgba(74,158,78,0.25); width: 10px; height: 10px; }
 .step-label { font-size: 10px; color: var(--color-text-muted); white-space: nowrap; }
 .progress-step.done .step-label, .progress-step.current .step-label { color: var(--color-primary); font-weight: 600; }
 .progress-step.current .step-label { font-size: 11px; }
 
 /* Sections */
-.section { background: #fff; margin: 8px 12px; border-radius: var(--radius-md); padding: 16px; }
+.section { background: var(--color-card); margin: 8px 16px; border-radius: var(--radius-md); padding: 16px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); }
 .sec-title { font-size: var(--font-size-base); font-weight: 700; margin-bottom: 12px; }
 
 /* Address */
@@ -493,7 +493,7 @@ function formatTime(d: string) {
 .dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
 .dot.pickup { background: var(--color-success); }
 .dot.dropoff { background: var(--color-danger); }
-.addr-divider-line { width: 1px; flex: 1; border-left: 1px dashed #ddd; margin: 4px 0 4px 4px; min-height: 12px; }
+.addr-divider-line { width: 1px; flex: 1; border-left: 1px dashed var(--color-border); margin: 4px 0 4px 4px; min-height: 12px; }
 .addr-content { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; flex: 1; }
 .addr-tag { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; color: #fff; background: var(--color-success); flex-shrink: 0; white-space: nowrap; }
 .addr-tag.send { background: var(--color-danger); }
@@ -528,12 +528,12 @@ function formatTime(d: string) {
 .action-section { padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; }
 .btn-pay { width: 100%; height: 50px; background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; }
 .btn-pay:active { background: var(--color-primary-dark); }
-.btn-cancel { width: 100%; height: 44px; background: #fff; color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
+.btn-cancel { width: 100%; height: 44px; background: var(--color-card); color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
 .status-hint { text-align: center; font-size: var(--font-size-base); color: var(--color-text-secondary); padding: 12px; }
 
 /* Dialogs */
 .dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
-.dialog { background: #fff; border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 320px; text-align: center; }
+.dialog { background: var(--color-card); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 320px; text-align: center; box-shadow: var(--shadow-raised); }
 .dialog h3 { font-size: var(--font-size-lg); margin-bottom: 12px; }
 .dialog-hint { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: 20px; }
 .pay-amount { display: flex; flex-direction: column; gap: 4px; margin: 16px 0; }
@@ -552,21 +552,21 @@ function formatTime(d: string) {
 .btn-dialog-danger { height: 44px; background: var(--color-danger); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
 
 /* Review */
-.btn-review { width: 100%; height: 44px; background: linear-gradient(135deg, #ff6b35, #ff8c5a); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-base); font-weight: 600; cursor: pointer; }
-.btn-review:active { opacity: 0.85; }
+.btn-review { width: 100%; height: 44px; background: var(--color-primary-gradient); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-base); font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+.btn-review:active { transform: translateY(1px) scale(0.98); }
 .review-done { text-align: center; }
 .review-stars { font-size: 28px; color: #f5a623; letter-spacing: 4px; }
 .review-content { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: 8px; }
 
 .star-picker { display: flex; justify-content: center; gap: 12px; margin: 16px 0; }
-.star-btn { font-size: 40px; color: #ddd; cursor: pointer; transition: color 0.15s; user-select: none; }
+.star-btn { font-size: 40px; color: var(--color-border); cursor: pointer; transition: color 0.15s; user-select: none; }
 .star-btn.active { color: #f5a623; }
 
 .dialog-textarea { width: 100%; min-height: 80px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px; font-size: var(--font-size-sm); resize: vertical; margin-bottom: 12px; box-sizing: border-box; font-family: inherit; }
 .dialog-textarea:focus { outline: none; border-color: var(--color-primary); }
 
 /* Complaint */
-.btn-complaint { width: 100%; height: 44px; background: #fff; color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
+.btn-complaint { width: 100%; height: 44px; background: var(--color-card); color: var(--color-text-secondary); border: 1px solid var(--color-border); border-radius: var(--radius-round); font-size: var(--font-size-base); cursor: pointer; }
 .btn-complaint:active { background: var(--color-bg); }
 .complaint-types { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
 .complaint-type-tag { padding: 6px 14px; border: 1px solid var(--color-border); border-radius: 20px; font-size: var(--font-size-sm); cursor: pointer; transition: all 0.15s; }
@@ -574,7 +574,7 @@ function formatTime(d: string) {
 
 /* WeChat Pay Dialog */
 .wechat-pay-dialog {
-  background: #fff;
+  background: var(--color-card);
   border-radius: 12px;
   padding: 0;
   width: 100%;
@@ -670,7 +670,7 @@ function formatTime(d: string) {
 
 /* Alipay Dialog */
 .alipay-dialog {
-  background: #fff;
+  background: var(--color-card);
   border-radius: 12px;
   padding: 0;
   width: 100%;
@@ -687,7 +687,7 @@ function formatTime(d: string) {
   gap: 8px;
 }
 .alipay-logo {
-  background: #fff;
+  background: var(--color-card);
   color: #1677FF;
   width: 28px;
   height: 28px;
@@ -739,7 +739,7 @@ function formatTime(d: string) {
 .alipay-cancel-btn {
   flex: 1;
   height: 52px;
-  background: #fff;
+  background: var(--color-card);
   color: #999;
   border: none;
   font-size: 16px;
