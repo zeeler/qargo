@@ -10,8 +10,8 @@ async function main() {
   for (const vt of VEHICLE_TYPES) {
     await prisma.vehicleType.upsert({
       where: { code: vt.code },
-      update: { name: vt.name, icon: vt.icon, sort: vt.sort },
-      create: { name: vt.name, code: vt.code, icon: vt.icon, sort: vt.sort },
+      update: { name: vt.name, icon: vt.icon, sort: vt.sort, length: vt.length, width: vt.width, height: vt.height, loadCapacity: vt.loadCapacity, volume: vt.volume },
+      create: { name: vt.name, code: vt.code, icon: vt.icon, sort: vt.sort, length: vt.length, width: vt.width, height: vt.height, loadCapacity: vt.loadCapacity, volume: vt.volume },
     });
   }
   console.log(`✅ Seeded ${VEHICLE_TYPES.length} vehicle types`);
