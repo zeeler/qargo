@@ -167,13 +167,14 @@ function formatTime(d: string) {
 .refresh-btn { cursor: pointer; font-size: 18px; width: 32px; text-align: right; }
 
 /* Tabs */
-.tabs { display: flex; background: #fff; margin-bottom: 8px; }
+.tabs { display: flex; background: var(--color-card); margin-bottom: 8px; }
 .tab { flex: 1; text-align: center; padding: 14px; font-size: var(--font-size-base); color: var(--color-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
 .tab.active { color: var(--color-primary); font-weight: 700; border-bottom-color: var(--color-primary); }
 
 /* Order List */
-.order-list { padding: 0 12px 12px; }
-.order-card { background: #fff; border-radius: var(--radius-md); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); position: relative; }
+.order-list { padding: 0 16px 12px; }
+.order-card { background: var(--color-card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); position: relative; transition: transform 0.15s ease; }
+.order-card:active { transform: scale(0.985); }
 .order-card[onclick] { cursor: pointer; }
 
 .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
@@ -203,8 +204,8 @@ function formatTime(d: string) {
 .action-hint.done { color: var(--color-success); }
 
 /* Dispatch Button */
-.btn-dispatch { display: block; width: 100%; height: 42px; background: var(--color-primary); color: #fff; border: none; border-radius: 21px; font-size: var(--font-size-base); font-weight: 600; cursor: pointer; margin-top: 12px; }
-.btn-dispatch:active { background: var(--color-primary-dark); }
+.btn-dispatch { display: block; width: 100%; height: 42px; background: var(--color-primary-gradient); color: #fff; border: none; border-radius: 21px; font-size: var(--font-size-base); font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.2s ease; }
+.btn-dispatch:active { transform: translateY(1px) scale(0.98); box-shadow: var(--shadow-sm); }
 
 /* Empty State */
 .empty-state { display: flex; flex-direction: column; align-items: center; padding: 100px 40px; text-align: center; }
@@ -214,7 +215,7 @@ function formatTime(d: string) {
 
 /* Dialog */
 .dialog-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
-.dialog { background: #fff; border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 320px; }
+.dialog { background: var(--color-card); border-radius: var(--radius-lg); padding: 24px; width: 100%; max-width: 320px; box-shadow: var(--shadow-raised); }
 .dialog h3 { font-size: var(--font-size-lg); text-align: center; margin-bottom: 16px; }
 .confirm-info { background: var(--color-bg); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 16px; }
 .ci-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: var(--font-size-sm); }
@@ -224,7 +225,7 @@ function formatTime(d: string) {
 .dialog-actions { display: flex; gap: 10px; }
 .dialog-actions button { flex: 1; height: 44px; border-radius: var(--radius-round); font-size: var(--font-size-base); border: none; cursor: pointer; }
 .btn-dialog-cancel { background: var(--color-bg); color: var(--color-text-secondary); }
-.btn-dialog-primary { background: var(--color-primary); color: #fff; font-weight: 600; }
-.btn-dialog-primary:active { background: var(--color-primary-dark); }
+.btn-dialog-primary { background: var(--color-primary-gradient); color: #fff; font-weight: 600; transition: all 0.2s ease; }
+.btn-dialog-primary:active { transform: translateY(1px) scale(0.98); }
 .btn-dialog-primary:disabled { background: #ccc; }
 </style>
