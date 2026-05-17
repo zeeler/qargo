@@ -19,6 +19,9 @@ const themeOverrides: GlobalThemeOverrides = {
     primaryColorHover: '#66bb6a',
     primaryColorPressed: '#3d8340',
     primaryColorSuppl: '#66bb6a',
+    bodyColor: '#f0f2f0',
+    cardColor: '#f8faf8',
+    inputColor: '#f0f2f0',
   },
 };
 </script>

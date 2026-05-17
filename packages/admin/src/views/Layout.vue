@@ -1,18 +1,18 @@
 <template>
-  <n-layout has-sider style="height: 100vh">
-    <n-layout-sider bordered content-style="padding: 24px;" :width="220">
+  <n-layout has-sider style="height: 100vh; background: #e8ebe8;">
+    <n-layout-sider bordered content-style="padding: 24px;" :width="220" style="background: #f0f2f0;">
       <n-h3 style="text-align: center; margin-bottom: 24px;">快货管理后台</n-h3>
       <n-menu :options="menuOptions" :value="activeKey" @update:value="handleMenuSelect" />
     </n-layout-sider>
-    <n-layout>
-      <n-layout-header bordered style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+    <n-layout style="background: #e8ebe8;">
+      <n-layout-header bordered style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; background: #f8faf8;">
         <n-h4 style="margin: 0;">{{ route.meta.title }}</n-h4>
         <n-space>
           <n-tag v-if="user" type="info">{{ user.name }}</n-tag>
           <n-button size="small" @click="handleLogout">退出</n-button>
         </n-space>
       </n-layout-header>
-      <n-layout-content content-style="padding: 24px;" style="height: calc(100vh - 60px); overflow-y: auto;">
+      <n-layout-content content-style="padding: 24px;" style="height: calc(100vh - 60px); overflow-y: auto; background: #e8ebe8;">
         <router-view />
       </n-layout-content>
     </n-layout>
