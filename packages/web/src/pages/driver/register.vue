@@ -55,12 +55,14 @@ async function handleRegister() {
 
 <style scoped>
 .page { padding: 16px; }
-.section { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-.section-title { font-size: 16px; font-weight: bold; margin-bottom: 12px; }
+.section { background: var(--color-card); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-card); border: 1px solid var(--color-border); }
+.section-title { font-size: var(--font-size-h3); font-weight: 700; margin-bottom: 12px; }
 .form-item { margin-bottom: 12px; }
-.form-item input, .input { width: 100%; height: 44px; background: #f5f5f5; border: none; border-radius: 8px; padding: 0 12px; font-size: 15px; outline: none; }
+.form-item input, .input { width: 100%; height: 44px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0 12px; font-size: var(--font-size-base); outline: none; transition: border-color 0.2s; }
+.form-item input:focus, .input:focus { border-color: var(--color-primary); }
 .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
-.half { flex: 1; height: 44px; background: #f5f5f5; border: none; border-radius: 8px; padding: 0 12px; font-size: 15px; outline: none; }
+.half { flex: 1; height: 44px; background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0 12px; font-size: var(--font-size-base); outline: none; }
 select.input { appearance: auto; }
-.btn-submit { width: 100%; height: 50px; background: #ff6b35; color: #fff; border: none; border-radius: 25px; font-size: 18px; cursor: pointer; margin-top: 12px; }
+.btn-submit { width: 100%; height: 50px; background: var(--color-primary-gradient); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; margin-top: 12px; transition: all 0.2s ease; }
+.btn-submit:active { transform: translateY(1px) scale(0.98); box-shadow: var(--shadow-sm); }
 </style>

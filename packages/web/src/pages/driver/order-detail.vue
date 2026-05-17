@@ -129,7 +129,7 @@ async function handlePhoto() {
     canvas.height = 300;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.fillStyle = '#ff6b35';
+      ctx.fillStyle = '#4a9e4e';
       ctx.fillRect(0, 0, 400, 300);
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 24px sans-serif';
