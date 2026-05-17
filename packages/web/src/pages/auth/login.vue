@@ -77,8 +77,8 @@ function goRegister() { router.push('/auth/register'); }
 .code-input-wrap input { width: 100%; }
 .btn-code { height: 48px; padding: 0 16px; font-size: var(--font-size-sm); background: var(--color-primary-light); color: var(--color-primary); border: 1px solid var(--color-primary); border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; font-weight: 600; }
 .btn-code:disabled { background: var(--color-bg); color: var(--color-text-muted); border-color: var(--color-border); cursor: not-allowed; }
-.btn-login { width: 100%; height: 50px; background: var(--color-primary); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; margin-top: 24px; transition: transform 0.1s; }
-.btn-login:active { transform: scale(0.98); background: var(--color-primary-dark); }
+.btn-login { width: 100%; height: 50px; background: var(--color-primary-gradient); color: #fff; border: none; border-radius: var(--radius-round); font-size: var(--font-size-lg); font-weight: 600; cursor: pointer; margin-top: 24px; transition: all 0.2s ease; }
+.btn-login:active { transform: translateY(1px) scale(0.98); box-shadow: var(--shadow-sm); }
 .links { text-align: center; margin-top: 20px; }
 .link { font-size: var(--font-size-sm); color: var(--color-primary); cursor: pointer; }
 .mock-hint { text-align: center; margin-top: 12px; color: var(--color-text-muted); font-size: var(--font-size-xs); background: var(--color-bg); padding: 8px; border-radius: var(--radius-sm); }
