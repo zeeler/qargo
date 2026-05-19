@@ -31,11 +31,11 @@ export interface VehicleTypeDef {
   code: string;
   icon: string;
   sort: number;
-  length?: number;       // 厢长（米）
-  width?: number;        // 厢宽（米）
-  height?: number;       // 厢高（米）
-  loadCapacity?: number;  // 载重（吨）
-  volume?: number;       // 容积（方）
+  length?: number;
+  width?: number;
+  height?: number;
+  loadCapacity?: number;
+  volume?: number;
 }
 
 /**

@@ -1,5 +1,8 @@
-import { IsString, IsNumber, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsEnum, Matches } from 'class-validator';
 import { PaymentMethod } from '@open-trade/shared';
+
+const PHONE_REGEX = /^1[3-9]\d{9}$/;
+const PHONE_MESSAGE = '请输入正确的手机号';
 
 export class CreateOrderDto {
   @IsString()
@@ -18,6 +21,7 @@ export class CreateOrderDto {
   pickupContactName: string;
 
   @IsString()
+  @Matches(PHONE_REGEX, { message: PHONE_MESSAGE })
   pickupContactPhone: string;
 
   @IsString()
@@ -33,6 +37,7 @@ export class CreateOrderDto {
   dropoffContactName: string;
 
   @IsString()
+  @Matches(PHONE_REGEX, { message: PHONE_MESSAGE })
   dropoffContactPhone: string;
 
   @IsOptional()
