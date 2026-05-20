@@ -113,7 +113,7 @@ const form = ref({
 });
 
 const formValid = computed(() => {
-  return form.value.address && form.value.contactName && form.value.contactPhone.length === 11;
+  return form.value.address && form.value.contactName && /^1[3-9]\d{9}$/.test(form.value.contactPhone);
 });
 
 function resetForm() {
