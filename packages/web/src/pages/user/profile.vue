@@ -73,7 +73,7 @@
     <!-- Menu Group 3: Tools -->
     <div class="menu-group">
       <div class="menu-group-title">常用工具</div>
-      <div class="menu-item" @click="showComingSoon('常用地址')">
+      <div class="menu-item" @click="router.push('/user/addresses')">
         <span class="menu-icon">🏷️</span>
         <span class="menu-label">常用地址</span>
         <span class="menu-arrow">›</span>

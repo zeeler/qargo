@@ -11,6 +11,7 @@ const router = createRouter({
     { path: '/order/list', name: 'orderList', component: () => import('../pages/order/list.vue') },
     { path: '/order/detail', name: 'orderDetail', component: () => import('../pages/order/detail.vue') },
     { path: '/user/profile', name: 'userProfile', component: () => import('../pages/user/profile.vue') },
+    { path: '/user/addresses', name: 'userAddresses', component: () => import('../pages/user/addresses.vue') },
     { path: '/driver/register', name: 'driverRegister', component: () => import('../pages/driver/register.vue') },
     { path: '/driver/orders', name: 'driverOrders', component: () => import('../pages/driver/orders.vue') },
     { path: '/driver/order-detail', name: 'driverOrderDetail', component: () => import('../pages/driver/order-detail.vue') },
