@@ -14,6 +14,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 
 import { ReviewModule } from './modules/review/review.module';
 import { ComplaintModule } from './modules/complaint/complaint.module';
+import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ComplaintModule } from './modules/complaint/complaint.module';
     SmsModule,
     ReviewModule,
     ComplaintModule,
+    WalletModule,
   ],
   providers: [
     {

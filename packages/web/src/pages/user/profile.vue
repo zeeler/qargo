@@ -50,10 +50,10 @@
     <!-- Menu Group 2: Wallet & Rewards -->
     <div class="menu-group">
       <div class="menu-group-title">资产与优惠</div>
-      <div class="menu-item" @click="showComingSoon('我的钱包')">
+      <div class="menu-item" @click="router.push('/user/wallet')">
         <span class="menu-icon">💰</span>
         <span class="menu-label">我的钱包</span>
-        <span class="menu-value">¥0.00</span>
+        <span class="menu-value">¥{{ walletBalance.toFixed(2) }}</span>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item" @click="showComingSoon('优惠券')">
@@ -106,11 +106,21 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/auth';
+import { http } from '../../utils/http';
 
 const router = useRouter();
 const authStore = useAuthStore();
+const walletBalance = ref(0);
+
+async function fetchWalletBalance() {
+  try {
+    const wallet = await http.get('/wallet');
+    walletBalance.value = Number(wallet.balance);
+  } catch { /* ignore */ }
+}
 
 function showComingSoon(name: string) {
   alert(`${name}功能开发中，敬请期待`);
@@ -119,6 +129,8 @@ function showComingSoon(name: string) {
 function handleLogout() {
   if (confirm('确定退出登录？')) authStore.logout();
 }
+
+onMounted(fetchWalletBalance);
 </script>
 
 <style scoped>

@@ -59,6 +59,38 @@ enum ComplaintStatus {
   dismissed
 }
 
+enum WalletTransactionType {
+  topup
+  refund
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  balance   Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User                @relation(fields: [userId], references: [id])
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id             String                 @id @default(cuid())
+  walletId       String                 @map("wallet_id")
+  type           WalletTransactionType
+  amount         Decimal                @db.Decimal(10, 2)
+  balanceBefore  Decimal                @db.Decimal(10, 2) @map("balance_before")
+  balanceAfter   Decimal                @db.Decimal(10, 2) @map("balance_after")
+  createdAt      DateTime               @default(now()) @map("created_at")
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+
+  @@map("wallet_transactions")
+}
+
 model User {
   id             String     @id @default(cuid())
   phone          String     @unique
@@ -76,6 +108,7 @@ model User {
   reviews     Review[]
   complaints  Complaint[]
   addresses   UserAddress[]
+      wallet      Wallet?
 
   @@map("users")
 }

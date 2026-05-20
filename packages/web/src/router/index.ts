@@ -13,6 +13,7 @@ const router = createRouter({
     { path: '/user/profile', name: 'userProfile', component: () => import('../pages/user/profile.vue') },
     { path: '/user/addresses', name: 'userAddresses', component: () => import('../pages/user/addresses.vue') },
     { path: '/user/settings', name: 'userSettings', component: () => import('../pages/user/settings.vue') },
+    { path: '/user/wallet', name: 'userWallet', component: () => import('../pages/user/wallet.vue') },
     { path: '/driver/register', name: 'driverRegister', component: () => import('../pages/driver/register.vue') },
     { path: '/driver/orders', name: 'driverOrders', component: () => import('../pages/driver/orders.vue') },
     { path: '/driver/order-detail', name: 'driverOrderDetail', component: () => import('../pages/driver/order-detail.vue') },
