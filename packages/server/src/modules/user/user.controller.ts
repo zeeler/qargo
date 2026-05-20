@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateProfileDto, CreateAddressDto } from './dto/user.dto';
+import { UpdateProfileDto, CreateAddressDto, UpdateAddressDto } from './dto/user.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtPayload } from '@open-trade/shared';
 
@@ -31,5 +31,10 @@ export class UserController {
   @Delete('addresses/:id')
   deleteAddress(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
     return this.userService.deleteAddress(user.userId, id);
+  }
+
+  @Put('addresses/:id')
+  updateAddress(@CurrentUser() user: JwtPayload, @Param('id') id: string, @Body() dto: UpdateAddressDto) {
+    return this.userService.updateAddress(user.userId, id, dto);
   }
 }

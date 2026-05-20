@@ -38,3 +38,33 @@ export class CreateAddressDto {
   @IsBoolean()
   isDefault?: boolean;
 }
+
+export class UpdateAddressDto {
+  @IsOptional()
+  @IsString()
+  label?: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
+  @IsNumber()
+  lng?: number;
+
+  @IsOptional()
+  @IsNumber()
+  lat?: number;
+
+  @IsOptional()
+  @IsString()
+  contactName?: string;
+
+  @IsOptional()
+  @IsString()
+  contactPhone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isDefault?: boolean;
+}
