@@ -126,8 +126,8 @@ async function fetchAddresses() {
   loading.value = true;
   try {
     addresses.value = await http.get('/user/addresses');
-  } catch (e) {
-    console.error('Failed to fetch addresses', e);
+  } catch (e: any) {
+    alert(e.message || '加载地址失败');
   } finally {
     loading.value = false;
   }
