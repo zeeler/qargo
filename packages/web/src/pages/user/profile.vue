@@ -88,7 +88,7 @@
         <span class="menu-label">客服中心</span>
         <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" @click="showComingSoon('设置')">
+      <div class="menu-item" @click="router.push('/user/settings')">
         <span class="menu-icon">⚙️</span>
         <span class="menu-label">设置</span>
         <span class="menu-arrow">›</span>
