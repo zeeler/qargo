@@ -83,7 +83,7 @@
         <span class="menu-label">发票管理</span>
         <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" @click="showComingSoon('客服中心')">
+      <div class="menu-item" @click="router.push('/user/service')">
         <span class="menu-icon">🎧</span>
         <span class="menu-label">客服中心</span>
         <span class="menu-arrow">›</span>

@@ -109,6 +109,7 @@ model User {
   complaints  Complaint[]
   addresses   UserAddress[]
       wallet      Wallet?
+	  feedbacks   Feedback[]
 
   @@map("users")
 }
@@ -341,4 +342,18 @@ model Complaint {
   user  User  @relation(fields: [complainantId], references: [id])
 
   @@map("complaints")
+}
+
+model Feedback {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  name        String
+  phone       String
+  content     String
+  status      String   @default("pending")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("feedbacks")
 }

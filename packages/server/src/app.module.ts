@@ -15,6 +15,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { ReviewModule } from './modules/review/review.module';
 import { ComplaintModule } from './modules/complaint/complaint.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
     ReviewModule,
     ComplaintModule,
     WalletModule,
+    FeedbackModule,
   ],
   providers: [
     {
