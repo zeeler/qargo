@@ -48,6 +48,10 @@ export class CreateOrderDto {
   @IsString()
   remark?: string;
 
+  @IsOptional()
+  @IsString()
+  couponCode?: string;
+
   @IsEnum(PaymentMethod)
   paymentMethod: PaymentMethod;
 }

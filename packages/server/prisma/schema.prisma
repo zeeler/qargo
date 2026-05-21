@@ -64,6 +64,16 @@ enum WalletTransactionType {
   refund
 }
 
+enum CouponType {
+  fixed
+  percent
+}
+
+enum UserCouponStatus {
+  unused
+  used
+}
+
 model Wallet {
   id        String   @id @default(cuid())
   userId    String   @unique @map("user_id")
@@ -110,6 +120,7 @@ model User {
   addresses   UserAddress[]
       wallet      Wallet?
 	  feedbacks   Feedback[]
+	  userCoupons  UserCoupon[]
 
   @@map("users")
 }
@@ -356,4 +367,37 @@ model Feedback {
   user User @relation(fields: [userId], references: [id])
 
   @@map("feedbacks")
+}
+
+model Coupon {
+  id              String     @id @default(cuid())
+  code            String     @unique
+  type            CouponType
+  value           Decimal    @db.Decimal(10, 2)
+  minOrderAmount  Decimal    @default(0) @db.Decimal(10, 2) @map("min_order_amount")
+  validFrom       DateTime   @map("valid_from")
+  validUntil      DateTime   @map("valid_until")
+  usageLimit      Int        @default(100) @map("usage_limit")
+  usedCount       Int        @default(0) @map("used_count")
+  createdAt       DateTime   @default(now()) @map("created_at")
+
+  userCoupons UserCoupon[]
+
+  @@map("coupons")
+}
+
+model UserCoupon {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  couponId  String           @map("coupon_id")
+  status    UserCouponStatus @default(unused)
+  usedAt    DateTime?        @map("used_at")
+  orderId   String?          @map("order_id")
+
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id])
+  coupon Coupon @relation(fields: [couponId], references: [id])
+
+  @@map("user_coupons")
 }

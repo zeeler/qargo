@@ -56,10 +56,10 @@
         <span class="menu-value">¥{{ walletBalance.toFixed(2) }}</span>
         <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" @click="showComingSoon('优惠券')">
+      <div class="menu-item" @click="router.push('/user/coupon')">
         <span class="menu-icon">🎫</span>
         <span class="menu-label">优惠券</span>
-        <span class="menu-value">0张</span>
+        <span class="menu-value">{{ couponCount }}张</span>
         <span class="menu-arrow">›</span>
       </div>
       <div class="menu-item" @click="showComingSoon('积分中心')">
@@ -114,11 +114,19 @@ import { http } from '../../utils/http';
 const router = useRouter();
 const authStore = useAuthStore();
 const walletBalance = ref(0);
+const couponCount = ref(0);
 
 async function fetchWalletBalance() {
   try {
     const wallet = await http.get('/wallet');
     walletBalance.value = Number(wallet.balance);
+  } catch { /* ignore */ }
+}
+
+async function fetchCouponCount() {
+  try {
+    const coupons = await http.get('/coupon/my');
+    couponCount.value = (coupons as any[]).filter((c: any) => c.status === 'unused').length;
   } catch { /* ignore */ }
 }
 
@@ -130,7 +138,10 @@ function handleLogout() {
   if (confirm('确定退出登录？')) authStore.logout();
 }
 
-onMounted(fetchWalletBalance);
+onMounted(() => {
+  fetchWalletBalance();
+  fetchCouponCount();
+});
 </script>
 
 <style scoped>

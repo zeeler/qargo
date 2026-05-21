@@ -13,6 +13,7 @@ const router = createRouter({
         { path: 'orders', name: 'Orders', component: () => import('../views/order-list/OrderList.vue'), meta: { title: '订单管理' } },
         { path: 'complaints', name: 'Complaints', component: () => import('../views/dispute/ComplaintList.vue'), meta: { title: '投诉处理' } },
         { path: 'pricing', name: 'Pricing', component: () => import('../views/pricing/PricingList.vue'), meta: { title: '定价管理' } },
+        { path: 'coupons', name: 'Coupons', component: () => import('../views/coupon/CouponList.vue'), meta: { title: '优惠券管理' } },
       ],
     },
     {

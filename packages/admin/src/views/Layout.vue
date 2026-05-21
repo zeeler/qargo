@@ -36,6 +36,7 @@ const menuOptions = [
   { label: '订单管理', key: '/orders', icon: () => h(NIcon, null, { default: () => '📄' }) },
   { label: '投诉处理', key: '/complaints', icon: () => h(NIcon, null, { default: () => '⚠️' }) },
   { label: '定价管理', key: '/pricing', icon: () => h(NIcon, null, { default: () => '💰' }) },
+  { label: '优惠券管理', key: '/coupons', icon: () => h(NIcon, null, { default: () => '🎫' }) },
 ];
 
 function handleMenuSelect(key: string) {

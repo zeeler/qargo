@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { VehicleService } from '../vehicle/vehicle.service';
+import { CouponService } from '../coupon/coupon.service';
 import { CreateOrderDto, NearbyOrderQueryDto } from './dto/order.dto';
 import { NEARBY_ORDER_RADIUS_KM } from '@open-trade/shared';
 
@@ -20,6 +21,7 @@ export class OrderService {
   constructor(
     private prisma: PrismaService,
     private vehicleService: VehicleService,
+    private couponService: CouponService,
   ) {}
 
   async create(userId: string, dto: CreateOrderDto) {
@@ -31,6 +33,24 @@ export class OrderService {
       dropoffLat: dto.dropoffLat,
       userAdditionalFee: dto.userAdditionalFee,
     });
+
+    let couponDiscount = 0;
+    let userCouponId: string | null = null;
+
+    if (dto.couponCode) {
+      const { userCoupon, coupon } = await this.couponService.applyCoupon(userId, dto.couponCode);
+      if (Number(coupon.minOrderAmount) > 0 && price.totalPrice < Number(coupon.minOrderAmount)) {
+        throw new BadRequestException(`订单金额需满¥${Number(coupon.minOrderAmount)}才能使用该优惠券`);
+      }
+      if (coupon.type === 'fixed') {
+        couponDiscount = Math.min(Number(coupon.value), price.totalPrice);
+      } else {
+        couponDiscount = Math.round(price.totalPrice * (1 - Number(coupon.value)) * 100) / 100;
+      }
+      userCouponId = userCoupon.id;
+    }
+
+    const totalPrice = Math.round(price.totalPrice - couponDiscount);
 
     const order = await this.prisma.order.create({
       data: {
@@ -53,19 +73,23 @@ export class OrderService {
         distancePrice: price.distancePrice,
         surgeFee: price.surgeFee,
         userAdditionalFee: price.userAdditionalFee,
-        totalPrice: Math.round(price.totalPrice),
+        totalPrice,
         cargoPhotos: [],
         remark: dto.remark || '',
       },
     });
 
+    if (userCouponId) {
+      await this.couponService.markUsed(userCouponId, order.id);
+    }
+
     await this.prisma.payment.create({
       data: {
         orderId: order.id,
         userId,
-        amount: price.totalPrice,
+        amount: totalPrice,
         method: dto.paymentMethod,
-        platformFee: Math.round(price.totalPrice * 0.05),
+        platformFee: Math.round(totalPrice * 0.05),
       },
     });
 
