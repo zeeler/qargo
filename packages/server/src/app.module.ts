@@ -17,6 +17,7 @@ import { ComplaintModule } from './modules/complaint/complaint.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { CouponModule } from './modules/coupon/coupon.module';
+import { PointsModule } from './modules/points/points.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CouponModule } from './modules/coupon/coupon.module';
     WalletModule,
     FeedbackModule,
     CouponModule,
+    PointsModule,
   ],
   providers: [
     {

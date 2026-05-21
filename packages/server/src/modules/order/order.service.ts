@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException, ForbiddenException 
 import { PrismaService } from '../../prisma/prisma.service';
 import { VehicleService } from '../vehicle/vehicle.service';
 import { CouponService } from '../coupon/coupon.service';
+import { PointsService } from '../points/points.service';
 import { CreateOrderDto, NearbyOrderQueryDto } from './dto/order.dto';
 import { NEARBY_ORDER_RADIUS_KM } from '@open-trade/shared';
 
@@ -22,6 +23,7 @@ export class OrderService {
     private prisma: PrismaService,
     private vehicleService: VehicleService,
     private couponService: CouponService,
+    private pointsService: PointsService,
   ) {}
 
   async create(userId: string, dto: CreateOrderDto) {
@@ -142,6 +144,8 @@ export class OrderService {
       where: { orderId },
       data: { status: 'success', paidAt: new Date() },
     });
+
+    await this.pointsService.earnPoints(userId, order.totalPrice);
 
     return { message: '支付成功' };
   }

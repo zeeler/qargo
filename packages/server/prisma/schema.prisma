@@ -74,6 +74,11 @@ enum UserCouponStatus {
   used
 }
 
+enum PointTransactionType {
+  earn
+  redeem
+}
+
 model Wallet {
   id        String   @id @default(cuid())
   userId    String   @unique @map("user_id")
@@ -121,6 +126,8 @@ model User {
       wallet      Wallet?
 	  feedbacks   Feedback[]
 	  userCoupons  UserCoupon[]
+	  points       UserPoints?
+	  pointTransactions PointTransaction[]
 
   @@map("users")
 }
@@ -400,4 +407,33 @@ model UserCoupon {
   coupon Coupon @relation(fields: [couponId], references: [id])
 
   @@map("user_coupons")
+}
+
+model PointTransaction {
+  id            String               @id @default(cuid())
+  pointId       String               @map("point_id")
+  userId        String               @map("user_id")
+  type          PointTransactionType
+  amount        Int
+  balanceBefore Int                  @map("balance_before")
+  balanceAfter  Int                  @map("balance_after")
+  createdAt     DateTime             @default(now()) @map("created_at")
+
+  user  User      @relation(fields: [userId], references: [id])
+  point UserPoints @relation(fields: [pointId], references: [id])
+
+  @@map("point_transactions")
+}
+
+model UserPoints {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  balance   Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user         User               @relation(fields: [userId], references: [id])
+  transactions PointTransaction[]
+
+  @@map("user_points")
 }

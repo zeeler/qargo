@@ -62,10 +62,10 @@
         <span class="menu-value">{{ couponCount }}张</span>
         <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" @click="showComingSoon('积分中心')">
+      <div class="menu-item" @click="router.push('/user/points')">
         <span class="menu-icon">⭐</span>
         <span class="menu-label">积分中心</span>
-        <span class="menu-value">0分</span>
+        <span class="menu-value">{{ pointsBalance }}分</span>
         <span class="menu-arrow">›</span>
       </div>
     </div>
@@ -115,6 +115,7 @@ const router = useRouter();
 const authStore = useAuthStore();
 const walletBalance = ref(0);
 const couponCount = ref(0);
+const pointsBalance = ref(0);
 
 async function fetchWalletBalance() {
   try {
@@ -130,6 +131,13 @@ async function fetchCouponCount() {
   } catch { /* ignore */ }
 }
 
+async function fetchPointsBalance() {
+  try {
+    const p = await http.get('/points');
+    pointsBalance.value = p.balance;
+  } catch { /* ignore */ }
+}
+
 function showComingSoon(name: string) {
   alert(`${name}功能开发中，敬请期待`);
 }
@@ -141,6 +149,7 @@ function handleLogout() {
 onMounted(() => {
   fetchWalletBalance();
   fetchCouponCount();
+  fetchPointsBalance();
 });
 </script>
 
