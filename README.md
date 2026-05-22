@@ -7,12 +7,19 @@
 ### 用户端
 
 - **注册/登录** — 手机号 + 短信验证码登录，支持用户/司机双角色
-- **首页** — 地址选择、20 种车型展示、运费预估（基于 Haversine 距离 + 分段计价）
-- **下单** — 填写货物信息、联系人、小费、支付方式
+- **首页** — 地址选择、20 种车型展示（含尺寸参数）、运费预估（基于 Haversine 距离 + 分段计价）
+- **下单** — 填写货物信息、联系人、小费、支付方式、优惠券抵扣
 - **订单管理** — 查看全部/待支付/进行中/已完成订单，支持支付、取消
 - **评价系统** — 订单完成后可对司机评分（1-5星）+ 文字评价
 - **投诉反馈** — 已支付订单可提交投诉，自动转为纠纷状态，管理端可处理/驳回
-- **个人中心** — 个人资料、收货地址管理、订单入口
+- **个人中心** — 个人资料、地址管理、订单入口
+- **我的钱包** — 余额展示、充值、交易流水
+- **优惠券** — 兑换码领取、下单抵扣（满减券/折扣券）
+- **积分中心** — 下单赠送积分、积分兑换优惠券
+- **常用地址** — 地址簿管理（新增/编辑/删除/设为默认）
+- **发票管理** — 已完成订单申请电子发票（个人/企业）
+- **客服中心** — 常见问题 FAQ + 意见反馈提交
+- **设置** — 紧急联系人、消息通知、隐私设置、清除缓存
 
 ### 司机端
 
@@ -28,6 +35,8 @@
 - **订单管理** — 查看全部订单，支持取消和完成操作
 - **投诉处理** — 查看用户投诉，支持处理/驳回，填写处理意见
 - **定价管理** — 编辑各车型的基础价格、包含公里数、每公里单价
+- **优惠券管理** — 创建满减券/折扣券（code/面值/门槛/有效期/总量）
+- **结算管理** — 生成司机结算单、确认结算
 
 ## 技术栈
 
@@ -71,6 +80,12 @@ open-trade/
 │   │           ├── admin/       # 管理后台模块
 │   │           ├── review/      # 评价模块
 │   │           ├── complaint/   # 投诉模块
+│   │           ├── coupon/      # 优惠券模块
+│   │           ├── points/      # 积分模块
+│   │           ├── wallet/      # 钱包模块
+│   │           ├── invoice/     # 发票模块
+│   │           ├── settlement/  # 结算模块
+│   │           ├── feedback/    # 反馈模块
 │   │           └── sms/         # 短信服务 (Mock)
 │   ├── web/                     # 用户端前端 (Vue 3)
 │   │   └── src/
@@ -78,7 +93,7 @@ open-trade/
 │   │       │   ├── home/        # 首页
 │   │       │   ├── auth/        # 登录/注册
 │   │       │   ├── order/       # 下单/订单列表/订单详情
-│   │       │   ├── user/        # 个人中心
+│   │       │   ├── user/        # 个人中心/地址/钱包/优惠券/积分/发票/客服/设置
 │   │       │   └── driver/      # 司机注册/附近订单/运输详情
 │   │       ├── router/          # 路由配置
 │   │       ├── stores/          # Pinia 状态管理
@@ -90,7 +105,9 @@ open-trade/
 │           │   ├── order-list/  # 订单管理
 │           │   ├── driver-review/ # 司机审核
 │           │   ├── dispute/     # 投诉处理
-│           │   └── pricing/     # 定价管理
+│           │   ├── pricing/     # 定价管理
+│           │   ├── coupon/      # 优惠券管理
+│           │   └── settlement/  # 结算管理
 │           ├── router/          # 路由配置
 │           └── utils/           # API 封装
 ├── package.json                 # 根配置 + 统一脚本
@@ -201,10 +218,25 @@ cd packages/server && node dist/main.js
 | 管理后台 | `GET/PUT /admin/orders/*` | 订单管理 |
 | 管理后台 | `GET/PUT /admin/complaints/*` | 投诉处理（处理/驳回） |
 | 管理后台 | `GET/PUT /admin/pricing/*` | 定价管理 |
+| 钱包 | `GET /wallet` | 获取钱包余额 |
+| 钱包 | `GET /wallet/transactions` | 交易流水 |
+| 钱包 | `POST /wallet/topup` | 充值 |
+| 优惠券 | `GET /coupon/my` | 我的优惠券 |
+| 优惠券 | `POST /coupon/redeem` | 兑换优惠券 |
+| 优惠券(管理) | `GET/POST/DELETE /coupon` | 优惠券 CRUD |
+| 积分 | `GET /points` | 获取积分余额 |
+| 积分 | `GET /points/transactions` | 积分流水 |
+| 积分 | `POST /points/redeem` | 积分兑换优惠券 |
+| 发票 | `GET /invoice` | 我的发票 |
+| 发票 | `POST /invoice` | 申请开票 |
+| 反馈 | `POST /feedback` | 提交意见反馈 |
+| 结算(管理) | `GET /settlement` | 结算列表 |
+| 结算(管理) | `POST /settlement/generate` | 生成结算单 |
+| 结算(管理) | `PUT /settlement/:id/settle` | 确认结算 |
 
 ## 数据库模型
 
-共 12 个核心模型：
+共 20 个核心模型：
 
 | 模型 | 表名 | 说明 |
 |------|------|------|
@@ -212,7 +244,7 @@ cd packages/server && node dist/main.js
 | UserAddress | user_addresses | 用户收货地址 |
 | Driver | drivers | 司机信息（实名、驾照、审核状态） |
 | Vehicle | vehicles | 车辆信息（车型、车牌、尺寸） |
-| VehicleType | vehicle_types | 车型定义（20 种车型） |
+| VehicleType | vehicle_types | 车型定义（20 种车型，含长/宽/高/容积） |
 | PricingRule | pricing_rules | 定价规则（基础价 + 每公里价 + 动态加价） |
 | Order | orders | 订单（发货/收货地址、价格、状态流转） |
 | OrderTrack | order_tracks | 订单轨迹 |
@@ -220,6 +252,14 @@ cd packages/server && node dist/main.js
 | Settlement | settlements | 司机结算单 |
 | Review | reviews | 订单评价 |
 | Complaint | complaints | 投诉记录 |
+| Wallet | wallets | 用户钱包余额 |
+| WalletTransaction | wallet_transactions | 钱包交易流水 |
+| Coupon | coupons | 优惠券定义（满减/折扣） |
+| UserCoupon | user_coupons | 用户优惠券持有 |
+| UserPoints | user_points | 用户积分余额 |
+| PointTransaction | point_transactions | 积分流水 |
+| Invoice | invoices | 电子发票 |
+| Feedback | feedbacks | 用户反馈 |
 
 完整 Schema 见 [packages/server/prisma/schema.prisma](packages/server/prisma/schema.prisma)。
 
@@ -240,7 +280,7 @@ paid~completed → disputed (用户投诉触发，可被管理端处理/驳回�
 
 ## 测试
 
-当前项目通过手动测试覆盖核心流程，测试用例见 [TEST_CASES.md](TEST_CASES.md)，覆盖以下场景：
+当前项目通过手动测试覆盖核心流程，测试用例见 [TEST_CASES.md](TEST_CASES.md)，涵盖 19 个模块 100+ 条测试用例：
 
 - 用户注册/登录/登出
 - 首页地址选择、车型展示、费用预估
@@ -249,6 +289,14 @@ paid~completed → disputed (用户投诉触发，可被管理端处理/驳回�
 - 订单投诉提交与纠纷处理
 - 司机注册、审核、接单、运输流程
 - 管理后台数据看板、审核、订单管理、投诉处理/驳回、定价
+- 常用地址 CRUD（新增/编辑/删除/设为默认）
+- 设置页面（紧急联系人、通知、隐私、清除缓存）
+- 我的钱包（余额、充值、交易流水）
+- 优惠券系统（管理端创建、用户兑换、下单抵扣）
+- 积分中心（下单赠积分、积分兑换优惠券）
+- 发票管理（已完成订单申请开票）
+- 客服中心（FAQ + 反馈提交）
+- 结算系统（生成结算单、确认结算）
 - 跨角色完整业务闭环
 
 运行方式：启动 `pnpm dev:server` + `pnpm dev:web`，按照 TEST_CASES.md 逐项验证。
@@ -308,6 +356,7 @@ server {
 此项目为学习/演示用途，以下功能暂未对接真实服务：
 
 - 短信验证码（使用 Mock，固定验证码 `123456`）
-- 支付（前端模拟微信/支付宝支付流程）
-- 地图（使用 Mock 位置数据）
+- 支付（前端模拟支付流程，钱包充值即时到账，积分下单自动赠送）
+- 地图（使用 Mock 位置数据，含深圳地区地址建议列表）
 - 文件上传（司机货物照片使用 Canvas Mock）
+- 发票（自动生成发票号，不对接税控系统）
