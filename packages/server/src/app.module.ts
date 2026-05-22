@@ -19,6 +19,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { CouponModule } from './modules/coupon/coupon.module';
 import { PointsModule } from './modules/points/points.module';
 import { InvoiceModule } from './modules/invoice/invoice.module';
+import { SettlementModule } from './modules/settlement/settlement.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { InvoiceModule } from './modules/invoice/invoice.module';
     CouponModule,
     PointsModule,
     InvoiceModule,
+    SettlementModule,
   ],
   providers: [
     {

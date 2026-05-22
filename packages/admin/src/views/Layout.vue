@@ -37,6 +37,7 @@ const menuOptions = [
   { label: '投诉处理', key: '/complaints', icon: () => h(NIcon, null, { default: () => '⚠️' }) },
   { label: '定价管理', key: '/pricing', icon: () => h(NIcon, null, { default: () => '💰' }) },
   { label: '优惠券管理', key: '/coupons', icon: () => h(NIcon, null, { default: () => '🎫' }) },
+  { label: '结算管理', key: '/settlements', icon: () => h(NIcon, null, { default: () => '💵' }) },
 ];
 
 function handleMenuSelect(key: string) {

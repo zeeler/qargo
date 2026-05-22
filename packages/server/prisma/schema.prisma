@@ -94,6 +94,7 @@ model Wallet {
   userId    String   @unique @map("user_id")
   balance   Decimal  @default(0) @db.Decimal(10, 2)
   createdAt DateTime @default(now()) @map("created_at")
+
   updatedAt DateTime @updatedAt @map("updated_at")
 
   user         User                @relation(fields: [userId], references: [id])
@@ -111,6 +112,7 @@ model WalletTransaction {
   balanceAfter   Decimal                @db.Decimal(10, 2) @map("balance_after")
   createdAt      DateTime               @default(now()) @map("created_at")
 
+
   wallet Wallet @relation(fields: [walletId], references: [id])
 
   @@map("wallet_transactions")
@@ -125,6 +127,7 @@ model User {
   defaultAddress String?
   status         UserStatus @default(active)
   createdAt      DateTime   @default(now()) @map("created_at")
+
   updatedAt      DateTime   @updatedAt @map("updated_at")
 
   driver      Driver?
@@ -170,6 +173,7 @@ model Driver {
   currentLat  Float?       @map("current_lat")
   remark      String?
   createdAt   DateTime     @default(now()) @map("created_at")
+
   updatedAt   DateTime     @updatedAt @map("updated_at")
 
   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -177,6 +181,7 @@ model Driver {
   orders   Order[]
   reviews  Review[]
   payments Payment[]
+	  settlements  Settlement[]
 
   @@map("drivers")
 }
@@ -214,6 +219,7 @@ model VehicleType {
   volume       Float?         @map("volume_m3")
   createdAt    DateTime       @default(now()) @map("created_at")
 
+
   pricingRules PricingRule[]
 
   @@map("vehicle_types")
@@ -228,6 +234,7 @@ model PricingRule {
   surgeRules      Json?    @map("surge_rules")
   effectiveDate   DateTime @default(now()) @map("effective_date")
   createdAt       DateTime @default(now()) @map("created_at")
+
 
   vehicleType VehicleType @relation(fields: [vehicleTypeCode], references: [code])
 
@@ -275,6 +282,7 @@ model Order {
   completedAt        DateTime? @map("completed_at")
   cancelledAt        DateTime? @map("cancelled_at")
   createdAt          DateTime  @default(now()) @map("created_at")
+
   updatedAt          DateTime  @updatedAt @map("updated_at")
 
   // 关联
@@ -297,6 +305,7 @@ model OrderTrack {
   lat       Float?
   createdAt DateTime @default(now()) @map("created_at")
 
+
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@map("order_tracks")
@@ -315,6 +324,7 @@ model Payment {
   transactionId String?       @map("transaction_id")
   paidAt        DateTime?     @map("paid_at")
   createdAt     DateTime      @default(now()) @map("created_at")
+
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
   order  Order @relation(fields: [orderId], references: [id])
@@ -335,7 +345,12 @@ model Settlement {
   netAmount    Float            @map("net_amount")
   status       SettlementStatus @default(pending)
   settledAt    DateTime?        @map("settled_at")
+
+
   createdAt    DateTime         @default(now()) @map("created_at")
+
+  driver Driver @relation(fields: [driverId], references: [id])
+
 
   @@map("settlements")
 }
@@ -349,9 +364,11 @@ model Review {
   content   String?
   createdAt DateTime @default(now()) @map("created_at")
 
+  driver Driver @relation(fields: [driverId], references: [id])
+
+
   order  Order @relation(fields: [orderId], references: [id])
   user   User  @relation(fields: [userId], references: [id])
-  driver Driver @relation(fields: [driverId], references: [id])
 
   @@map("reviews")
 }
@@ -366,6 +383,7 @@ model Complaint {
   resolution     String?
   adminId        String?          @map("admin_id")
   createdAt      DateTime         @default(now()) @map("created_at")
+
   updatedAt      DateTime         @updatedAt @map("updated_at")
 
   order Order @relation(fields: [orderId], references: [id])
@@ -382,6 +400,7 @@ model Feedback {
   content     String
   status      String   @default("pending")
   createdAt   DateTime @default(now()) @map("created_at")
+
 
   user User @relation(fields: [userId], references: [id])
 
@@ -400,6 +419,7 @@ model Coupon {
   usedCount       Int        @default(0) @map("used_count")
   createdAt       DateTime   @default(now()) @map("created_at")
 
+
   userCoupons UserCoupon[]
 
   @@map("coupons")
@@ -414,6 +434,7 @@ model UserCoupon {
   orderId   String?          @map("order_id")
 
   createdAt DateTime         @default(now()) @map("created_at")
+
 
   user   User   @relation(fields: [userId], references: [id])
   coupon Coupon @relation(fields: [couponId], references: [id])
@@ -431,6 +452,7 @@ model PointTransaction {
   balanceAfter  Int                  @map("balance_after")
   createdAt     DateTime             @default(now()) @map("created_at")
 
+
   user  User      @relation(fields: [userId], references: [id])
   point UserPoints @relation(fields: [pointId], references: [id])
 
@@ -442,6 +464,7 @@ model UserPoints {
   userId    String   @unique @map("user_id")
   balance   Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at")
+
   updatedAt DateTime @updatedAt @map("updated_at")
 
   user         User               @relation(fields: [userId], references: [id])
@@ -461,6 +484,7 @@ model Invoice {
   invoiceNo   String        @unique @map("invoice_no")
   status      InvoiceStatus @default(pending)
   createdAt   DateTime      @default(now()) @map("created_at")
+
 
   user  User  @relation(fields: [userId], references: [id])
   order Order @relation(fields: [orderId], references: [id])
