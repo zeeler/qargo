@@ -2,6 +2,8 @@
   <div>
     <n-h2 style="margin-bottom: 20px;">结算管理</n-h2>
 
+    <n-alert v-if="errorMsg" type="error" :title="errorMsg" style="margin-bottom: 16px;" />
+
     <n-button type="primary" @click="handleGenerate" :disabled="generating" style="margin-bottom: 24px;">
       {{ generating ? '生成中...' : '生成结算单' }}
     </n-button>
@@ -47,7 +49,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import api from '../../utils/api';
-import { NH2, NButton, NCard, NTable, NTag } from 'naive-ui';
+import { NH2, NButton, NCard, NTable, NTag, NAlert } from 'naive-ui';
 
 interface Settlement {
   id: string;
@@ -64,11 +66,17 @@ interface Settlement {
 
 const settlements = ref<Settlement[]>([]);
 const generating = ref(false);
+const errorMsg = ref('');
 
 async function fetchSettlements() {
+  errorMsg.value = '';
   try {
     settlements.value = await api.get('/settlement');
-  } catch (e) { console.error(e); }
+  } catch (e: any) {
+    const msg = e?.response?.data?.message || e?.message || '加载失败';
+    errorMsg.value = msg;
+    if (e?.response?.status === 401) errorMsg.value = '请先登录管理后台';
+  }
 }
 
 async function handleGenerate() {
