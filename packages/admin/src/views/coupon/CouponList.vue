@@ -2,6 +2,8 @@
   <div>
     <n-h2 style="margin-bottom: 20px;">优惠券管理</n-h2>
 
+    <n-alert v-if="errorMsg" type="error" :title="errorMsg" style="margin-bottom: 16px;" />
+
     <!-- Create Form -->
     <n-card title="创建优惠券" style="margin-bottom: 24px;">
       <n-form :model="form" label-placement="left" label-width="100">
@@ -64,7 +66,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
 import api from '../../utils/api';
-import { NH2, NCard, NForm, NFormItemGi, NGrid, NInput, NInputNumber, NSelect, NDatePicker, NButton, NTable, NTag } from 'naive-ui';
+import { NH2, NCard, NForm, NFormItemGi, NGrid, NInput, NInputNumber, NSelect, NDatePicker, NButton, NTable, NTag, NAlert } from 'naive-ui';
 
 interface Coupon {
   id: string;
@@ -80,6 +82,8 @@ interface Coupon {
 
 const coupons = ref<Coupon[]>([]);
 const creating = ref(false);
+const loading = ref(true);
+const errorMsg = ref('');
 
 const typeOptions = [
   { label: '满减券', value: 'fixed' },
@@ -96,10 +100,18 @@ const form = reactive({
 });
 
 async function fetchCoupons() {
+  loading.value = true;
+  errorMsg.value = '';
   try {
     coupons.value = await api.get('/coupon');
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    const msg = e?.response?.data?.message || e?.message || '加载失败';
+    errorMsg.value = msg;
+    if (e?.response?.status === 401) {
+      errorMsg.value = '请先登录管理后台';
+    }
+  } finally {
+    loading.value = false;
   }
 }
 
