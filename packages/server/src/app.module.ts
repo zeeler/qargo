@@ -18,6 +18,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { CouponModule } from './modules/coupon/coupon.module';
 import { PointsModule } from './modules/points/points.module';
+import { InvoiceModule } from './modules/invoice/invoice.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PointsModule } from './modules/points/points.module';
     FeedbackModule,
     CouponModule,
     PointsModule,
+    InvoiceModule,
   ],
   providers: [
     {

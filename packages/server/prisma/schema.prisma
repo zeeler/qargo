@@ -79,6 +79,16 @@ enum PointTransactionType {
   redeem
 }
 
+enum InvoiceType {
+  personal
+  company
+}
+
+enum InvoiceStatus {
+  pending
+  issued
+}
+
 model Wallet {
   id        String   @id @default(cuid())
   userId    String   @unique @map("user_id")
@@ -128,6 +138,7 @@ model User {
 	  userCoupons  UserCoupon[]
 	  points       UserPoints?
 	  pointTransactions PointTransaction[]
+	  invoices     Invoice[]
 
   @@map("users")
 }
@@ -272,6 +283,7 @@ model Order {
   payment     Payment?
   tracks      OrderTrack[]
   review      Review?
+	  invoice     Invoice?
   complaints  Complaint[]
 
   @@map("orders")
@@ -436,4 +448,22 @@ model UserPoints {
   transactions PointTransaction[]
 
   @@map("user_points")
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  userId      String        @map("user_id")
+  orderId     String        @unique @map("order_id")
+  type        InvoiceType
+  title       String
+  taxNumber   String?       @map("tax_number")
+  amount      Decimal       @db.Decimal(10, 2)
+  invoiceNo   String        @unique @map("invoice_no")
+  status      InvoiceStatus @default(pending)
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  user  User  @relation(fields: [userId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@map("invoices")
 }

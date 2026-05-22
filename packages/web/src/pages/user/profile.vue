@@ -78,7 +78,7 @@
         <span class="menu-label">常用地址</span>
         <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" @click="showComingSoon('发票管理')">
+      <div class="menu-item" @click="router.push('/user/invoice')">
         <span class="menu-icon">📊</span>
         <span class="menu-label">发票管理</span>
         <span class="menu-arrow">›</span>

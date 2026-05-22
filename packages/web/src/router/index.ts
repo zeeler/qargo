@@ -17,6 +17,7 @@ const router = createRouter({
     { path: '/user/service', name: 'userService', component: () => import('../pages/user/service.vue') },
     { path: '/user/coupon', name: 'userCoupon', component: () => import('../pages/user/coupon.vue') },
     { path: '/user/points', name: 'userPoints', component: () => import('../pages/user/points.vue') },
+    { path: '/user/invoice', name: 'userInvoice', component: () => import('../pages/user/invoice.vue') },
     { path: '/driver/register', name: 'driverRegister', component: () => import('../pages/driver/register.vue') },
     { path: '/driver/orders', name: 'driverOrders', component: () => import('../pages/driver/orders.vue') },
     { path: '/driver/order-detail', name: 'driverOrderDetail', component: () => import('../pages/driver/order-detail.vue') },
