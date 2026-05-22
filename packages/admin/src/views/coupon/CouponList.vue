@@ -6,72 +6,73 @@
 
     <!-- Create Form -->
     <n-card title="创建优惠券" style="margin-bottom: 24px;">
-      <n-form :model="form" label-placement="left" label-width="100">
-        <n-grid :cols="3" :x-gap="16">
-          <n-form-item-gi label="兑换码">
-            <n-input v-model:value="form.code" placeholder="如 NEW50" />
-          </n-form-item-gi>
-          <n-form-item-gi label="类型">
-            <n-select v-model:value="form.type" :options="typeOptions" />
-          </n-form-item-gi>
-          <n-form-item-gi label="面值">
-            <n-input-number v-model:value="form.value" :min="1" placeholder="固定=元数，折扣=0.x" />
-          </n-form-item-gi>
-          <n-form-item-gi label="最低消费">
-            <n-input-number v-model:value="form.minOrderAmount" :min="0" placeholder="0=无门槛" />
-          </n-form-item-gi>
-          <n-form-item-gi label="有效期起">
-            <n-date-picker v-model:formatted-value="form.validFrom" type="date" />
-          </n-form-item-gi>
-          <n-form-item-gi label="有效期止">
-            <n-date-picker v-model:formatted-value="form.validUntil" type="date" />
-          </n-form-item-gi>
-        </n-grid>
-        <n-button type="primary" @click="handleCreate" :disabled="creating" style="margin-top: 12px;">
-          {{ creating ? '创建中' : '创建优惠券' }}
+      <n-form label-placement="left" label-width="100">
+        <n-form-item label="兑换码">
+          <n-input v-model:value="form.code" placeholder="如 NEW50" />
+        </n-form-item>
+        <n-form-item label="类型">
+          <n-select v-model:value="form.type" :options="typeOptions" style="width: 200px;" />
+        </n-form-item>
+        <n-form-item label="面值">
+          <n-input-number v-model:value="form.value" :min="0.01" :step="1" style="width: 200px;" />
+        </n-form-item>
+        <n-form-item label="满减门槛（元）">
+          <n-input-number v-model:value="form.minOrderAmount" :min="0" style="width: 200px;" />
+        </n-form-item>
+        <n-form-item label="有效期起">
+          <n-date-picker v-model:formatted-value="form.validFrom" type="date" style="width: 200px;" />
+        </n-form-item>
+        <n-form-item label="有效期止">
+          <n-date-picker v-model:formatted-value="form.validUntil" type="date" style="width: 200px;" />
+        </n-form-item>
+        <n-button type="primary" @click="handleCreate" :disabled="creating">
+          {{ creating ? '创建中...' : '创建优惠券' }}
         </n-button>
       </n-form>
     </n-card>
 
     <!-- Coupon List -->
     <n-card title="优惠券列表">
-      <n-table :single-line="false">
-        <thead>
-          <tr>
-            <th>兑换码</th>
-            <th>类型</th>
-            <th>面值</th>
-            <th>门槛</th>
-            <th>有效期</th>
-            <th>已领/总量</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="c in coupons" :key="c.id">
-            <td><n-tag>{{ c.code }}</n-tag></td>
-            <td>{{ c.type === 'fixed' ? '满减' : '折扣' }}</td>
-            <td>{{ c.type === 'fixed' ? '¥' + Number(c.value) : (Number(c.value) * 10).toFixed(1) + '折' }}</td>
-            <td>{{ Number(c.minOrderAmount) > 0 ? '¥' + Number(c.minOrderAmount) : '无门槛' }}</td>
-            <td>{{ formatDate(c.validFrom) }} ~ {{ formatDate(c.validUntil) }}</td>
-            <td>{{ c.usedCount }} / {{ c.usageLimit }}</td>
-            <td><n-button size="small" type="error" @click="handleDelete(c.id)">删除</n-button></td>
-          </tr>
-        </tbody>
-      </n-table>
+      <n-spin :show="loading">
+        <n-table v-if="coupons.length > 0" :single-line="false">
+          <thead>
+            <tr>
+              <th>兑换码</th>
+              <th>类型</th>
+              <th>面值</th>
+              <th>门槛</th>
+              <th>有效期</th>
+              <th>已领/总量</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="c in coupons" :key="c.id">
+              <td><n-tag>{{ c.code }}</n-tag></td>
+              <td>{{ c.type === 'fixed' ? '满减' : '折扣' }}</td>
+              <td>{{ c.type === 'fixed' ? '¥' + Number(c.value) : (Number(c.value) * 10).toFixed(1) + '折' }}</td>
+              <td>{{ Number(c.minOrderAmount) > 0 ? '¥' + Number(c.minOrderAmount) : '无门槛' }}</td>
+              <td>{{ formatDate(c.validFrom) }} ~ {{ formatDate(c.validUntil) }}</td>
+              <td>{{ c.usedCount }} / {{ c.usageLimit }}</td>
+              <td><n-button size="small" type="error" @click="handleDelete(c.id)">删除</n-button></td>
+            </tr>
+          </tbody>
+        </n-table>
+        <n-empty v-else description="暂无优惠券" />
+      </n-spin>
     </n-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onBeforeMount } from 'vue';
 import api from '../../utils/api';
-import { NH2, NCard, NForm, NFormItemGi, NGrid, NInput, NInputNumber, NSelect, NDatePicker, NButton, NTable, NTag, NAlert } from 'naive-ui';
+import { NH2, NCard, NForm, NFormItem, NInput, NInputNumber, NSelect, NDatePicker, NButton, NTable, NTag, NAlert, NSpin, NEmpty } from 'naive-ui';
 
 interface Coupon {
   id: string;
   code: string;
-  type: 'fixed' | 'percent';
+  type: string;
   value: number;
   minOrderAmount: number;
   validFrom: string;
@@ -82,7 +83,7 @@ interface Coupon {
 
 const coupons = ref<Coupon[]>([]);
 const creating = ref(false);
-const loading = ref(true);
+const loading = ref(false);
 const errorMsg = ref('');
 
 const typeOptions = [
@@ -103,13 +104,11 @@ async function fetchCoupons() {
   loading.value = true;
   errorMsg.value = '';
   try {
-    coupons.value = await api.get('/coupon');
+    coupons.value = (await api.get('/coupon')) as Coupon[];
   } catch (e: any) {
     const msg = e?.response?.data?.message || e?.message || '加载失败';
     errorMsg.value = msg;
-    if (e?.response?.status === 401) {
-      errorMsg.value = '请先登录管理后台';
-    }
+    if (e?.response?.status === 401) errorMsg.value = '请先登录管理后台';
   } finally {
     loading.value = false;
   }
@@ -127,7 +126,7 @@ async function handleCreate() {
     form.code = '';
     await fetchCoupons();
   } catch (e: any) {
-    alert(e.message || '创建失败');
+    alert(e?.response?.data?.message || e?.message || '创建失败');
   } finally {
     creating.value = false;
   }
@@ -139,7 +138,7 @@ async function handleDelete(id: string) {
     await api.delete(`/coupon/${id}`);
     await fetchCoupons();
   } catch (e: any) {
-    alert(e.message || '删除失败');
+    alert(e?.response?.data?.message || e?.message || '删除失败');
   }
 }
 
@@ -147,5 +146,5 @@ function formatDate(dateStr: string) {
   return dateStr ? dateStr.split('T')[0] : '';
 }
 
-onMounted(fetchCoupons);
+onBeforeMount(fetchCoupons);
 </script>

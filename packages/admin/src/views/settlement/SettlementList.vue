@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import api from '../../utils/api';
 import { NH2, NButton, NCard, NTable, NTag, NAlert } from 'naive-ui';
 
@@ -103,5 +103,5 @@ function formatDate(dateStr: string) {
   return dateStr ? dateStr.split('T')[0] : '';
 }
 
-onMounted(fetchSettlements);
+onBeforeMount(fetchSettlements);
 </script>
