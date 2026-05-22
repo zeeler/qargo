@@ -20,10 +20,10 @@
           <n-input-number v-model:value="form.minOrderAmount" :min="0" style="width: 200px;" />
         </n-form-item>
         <n-form-item label="有效期起">
-          <n-date-picker v-model:formatted-value="form.validFrom" type="date" style="width: 200px;" />
+          <n-date-picker v-model:value="form.validFrom" type="date" style="width: 200px;" />
         </n-form-item>
         <n-form-item label="有效期止">
-          <n-date-picker v-model:formatted-value="form.validUntil" type="date" style="width: 200px;" />
+          <n-date-picker v-model:value="form.validUntil" type="date" style="width: 200px;" />
         </n-form-item>
         <n-button type="primary" @click="handleCreate" :disabled="creating">
           {{ creating ? '创建中...' : '创建优惠券' }}
@@ -96,8 +96,8 @@ const form = reactive({
   type: 'fixed' as string,
   value: 10,
   minOrderAmount: 0,
-  validFrom: '',
-  validUntil: '',
+  validFrom: null as number | null,
+  validUntil: null as number | null,
 });
 
 async function fetchCoupons() {
@@ -121,7 +121,14 @@ async function handleCreate() {
   }
   creating.value = true;
   try {
-    await api.post('/coupon', { ...form });
+    await api.post('/coupon', {
+      code: form.code,
+      type: form.type,
+      value: form.value,
+      minOrderAmount: form.minOrderAmount,
+      validFrom: new Date(form.validFrom).toISOString(),
+      validUntil: new Date(form.validUntil).toISOString(),
+    });
     alert('创建成功');
     form.code = '';
     await fetchCoupons();
